@@ -1,7 +1,7 @@
 from flask import Flask           # import flask
 from flask import render_template
 from flask import request
-from flask import Response
+from flask import make_response
 import service
 app = Flask(__name__)             # create an app instance
 @app.route("/")                   # at the end point /
@@ -12,9 +12,13 @@ def hello():                      # call method hello
 def form_example():
     if request.method == 'POST':  #this block is only entered when the form is submitted
         query = request.form.to_dict()
+        
         result = service.parse_query(query)
-
-        return '''{}'''.format(result.to_html())
+        resp = make_response(result.to_csv(sep="\t"))
+        resp.headers["Content-Disposition"] = "attachment; filename=result.txt"
+        resp.headers["Content-Type"] = "text/csv"
+        return resp
+        #return '''{}'''.format(result.to_html())
 
     return '''<form method="POST">
                   <h1>Dataset</h1>
