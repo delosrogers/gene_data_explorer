@@ -13,7 +13,6 @@ def form_example():
     if request.method == 'POST':  #this block is only entered when the form is submitted
         query = request.form.to_dict()
         result = service.parse_query(query)
-        Response(result.to_csv('resluts.csv'),mimetype="txt/plain")
 
         return '''{}'''.format(result.to_html())
 
@@ -48,8 +47,9 @@ def form_example():
                   <input type="checkbox" name="dt-pvalue" value="dat1p_tph1p_v_N2.pvalue"> <label for="dt-pvalue"> pvalue </label>
                   <input type="checkbox" name="dt-padj" value="dat1p_tph1p_v_N2.padj"> <label for="dt-padj"> padj </label>
                   <h3><i>Eps-8:</i><h3>
-                  <input type="checkbox" name="eps8-foldChange" value="eps8_RNAi.TagwiseDispersionsFoldChange"> <label for="dt-baseMean"> Fold Change </label>
-                  <input type="checkbox" name="eps8-log2FoldChange" value="eps8_RNAi.log2FoldChange"> <label for="dt-log2FoldChange"> log2FoldChange </label><br>
+                  <input type="checkbox" name="eps8-foldChange" value="eps8_RNAi.TagwiseDispersionsFoldChange"> <label for="eps8-foldChange"> Fold Change </label>
+                  <input type="checkbox" name="eps8-log2FoldChange" value="eps8_RNAi.log2FoldChange"> <label for="eps8-log2FoldChange"> log2FoldChange </label>
+                  <input type="checkbox" name="eps8-FDRpadj" value="eps8_RNAi.TagwiseDispersionsFDRPValueCorrection"> <label for="eps8-FDRpadj"> FDR padj </label><br>
                   <br>
                   genes:<br>
                   <textarea name="genes"></textarea>
