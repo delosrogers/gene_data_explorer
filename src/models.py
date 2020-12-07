@@ -26,7 +26,7 @@ def create_connection(host_name, user_name, user_password):
 class geneModel:
     
     def __init__(self):
-        with open ("./src/credentials.txt","r") as myfile: passwd = myfile.readlines()[0]
+        with open ("credentials.txt","r") as myfile: passwd = myfile.readlines()[0]
         self.conn = create_connection('localhost', 'web_app', passwd)
         self.cursor = self.conn.cursor(buffered=True)
     
@@ -56,6 +56,5 @@ class geneModel:
         return df
 
 db = geneModel()
+print(db.join_data(['genes.WormBaseID', 'genes.GeneName', 'tph1p_v_N2.log2FoldChange', 'dat1p_v_N2.log2FoldChange'], ['genes', 'tph1p_v_N2', 'dat1p_v_N2'], ['WBGene00000001', 'WBGene00000002']))
 
-print(db.join_data(['genes.WormBaseID', 'tph1p_v_N2.log2FoldChange', 'dat1p_v_N2.log2FoldChange'],['genes', 'tph1p_v_N2', 'dat1p_v_N2'], ['WBGene00000001', 'WBGene00000002']))
-#SELECT genes.WormBaseID, tph1p_v_N2.log2FoldChange, dat1p_v_N2.log2FoldChange FROM genes INNER JOIN tph1p_v_N2 USING (gid) INNER JOIN dat1p_v_N2 USING (gid) WHERE genes.WormBaseID IN ('WBGene00000001', 'WBGene00000002');
