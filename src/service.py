@@ -11,7 +11,6 @@ def parse_query(query):
         print(tmp_table)
         tables.append(tmp_table[0])
         columns.append(q_list[i])
-    tables = ['genes'] + tables
     tables = list(set(tables))
     print(tables)
     genes_str = query['genes']

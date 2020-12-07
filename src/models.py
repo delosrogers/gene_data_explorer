@@ -31,7 +31,6 @@ class geneModel:
         self.cursor = self.conn.cursor(buffered=True)
     
     def join_data(self, columns: list, tables: list, genes: list) -> pd.DataFrame:
-        tables = tables[1:len(tables)] #remove first entry of tables which is genes because it is implied and messes up parsing
         sql_q = "SELECT"
         #create the correct amount of column feilds
         for i in range(len(columns)-1):
@@ -56,5 +55,5 @@ class geneModel:
         return df
 
 db = geneModel()
-print(db.join_data(['genes.WormBaseID', 'genes.GeneName', 'tph1p_v_N2.log2FoldChange', 'dat1p_v_N2.log2FoldChange'], ['genes', 'tph1p_v_N2', 'dat1p_v_N2'], ['WBGene00000001', 'WBGene00000002']))
+
 
