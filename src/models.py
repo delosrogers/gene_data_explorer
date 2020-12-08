@@ -30,7 +30,7 @@ class geneModel:
         self.conn = create_connection('localhost', 'web_app', passwd)
         self.cursor = self.conn.cursor(buffered=True)
     
-    def join_data(self, columns: list, tables: list, genes: list) -> pd.DataFrame:
+    def join_data(self, columns: list, tables: list, genes: list, additional_params="") -> pd.DataFrame:
         sql_q = "SELECT"
         #create the correct amount of column feilds
         for i in range(len(columns)-1):
@@ -42,7 +42,8 @@ class geneModel:
         sql_q = sql_q + " WHERE genes.WormbaseID IN ("
         for i in range(len(genes)-1):
             sql_q = sql_q + "%s,"
-        sql_q = sql_q + " %s);"
+        sql_q = sql_q + " %s)"
+        sql_q = sql_q + " " + additional_params +";"
         values = tuple(genes)
         try:
             print(sql_q, values)
@@ -52,7 +53,7 @@ class geneModel:
             print(f"The error '{e}' occurred")
             print(self.cursor.statement)
         df = pd.DataFrame(data=res, columns=columns)
-        return df
+        return df, self.cursor.statement
 
 db = geneModel()
 
