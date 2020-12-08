@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 import pandas as pd
+import sql_resources
 
 def create_connection(host_name, user_name, user_password):
     connection = None
@@ -39,10 +40,16 @@ class geneModel:
         #create the correct number of join table feilds
         for i in tables:
             sql_q = sql_q + " INNER JOIN "+ i + " USING (gid)"
-        sql_q = sql_q + " WHERE genes.WormbaseID IN ("
-        for i in range(len(genes)-1):
-            sql_q = sql_q + "%s,"
-        sql_q = sql_q + " %s)"
+        sql_q = sql_q + " WHERE "
+        df = self.make_query(sql_q, columns, genes=genes, additional_params=additional_params)
+        return df, self.cursor.statement
+
+    def make_query(self, sql_q, columns, genes=None, additional_params=""):
+        if len(genes)>0:
+            sql_q += "genes.WormBaseID in ("
+            for i in range(len(genes)-1):
+                sql_q = sql_q + "%s,"
+            sql_q = sql_q + " %s)"
         sql_q = sql_q + " " + additional_params +";"
         values = tuple(genes)
         try:
@@ -53,8 +60,28 @@ class geneModel:
             print(f"The error '{e}' occurred")
             print(self.cursor.statement)
         df = pd.DataFrame(data=res, columns=columns)
-        return df, self.cursor.statement
+        return df
 
-db = geneModel()
+
+    def get_info(self) -> list:
+        self.cursor.execute("SELECT * FROM information_schema.columns WHERE table_schema = 'gene_data';")
+        #columns = "TABLE_CATALOG TABLE_SCHEMA _TABLE_NAME COLUMN_NAME ORDINAL_POSITION COLUMN DEFAULT IS_NULLABLE DATA_TYPE CHARACTER_MAXIMUM_LENGTH \
+        #    CHARACTER_OCTET_LENGTH NUMERIC_PRECISION NUMERIC_SCALE DATETIME_PRECISION CHARACTER_SET_NAME COLUMN_TYPE COLUMN_KEY EXTRA PRIVILEGES COLUMN_COMMENT \
+        #        GENERATION_EXPRESSION SRS_ID".split(" ")
+        columns = "TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | COLUMN_NAME | ORDINAL_POSITION | COLUMN_DEFAULT | IS_NULLABLE | DATA_TYPE | CHARACTER_MAXIMUM_LENGTH | CHARACTER_OCTET_LENGTH | NUMERIC_PRECISION | NUMERIC_SCALE | DATETIME_PRECISION | CHARACTER_SET_NAME | COLLATION_NAME | COLUMN_TYPE  | COLUMN_KEY | EXTRA | PRIVILEGES | COLUMN_COMMENT | GENERATION_EXPRESSION | SRS_ID".split("|")
+        df = pd.DataFrame(data = self.cursor.fetchall(), columns=columns)
+        return df
+        """ self.cursor.execute("SHOW TABLES;")
+        tables = self.cursor.fetchall()
+        tables = sql_resources.column_to_list(tables)
+        describe_list = []
+        for i in tables:
+            self.cursor.execute("DESCRIBE %s", (i,))
+            res = self.cursor.fetchall()
+            columns = self.cursor.execute("")
+            describe_list.append(pd.DataFrame(data=res)) """
+
+
+
 
 

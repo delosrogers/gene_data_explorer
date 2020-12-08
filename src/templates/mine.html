@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <title>Gene Explorer</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <form method="POST">
+        <h3>What form do you want your results?</h3>
+        <select name="download_type">
+          <option value="html">HTML</option>
+          <option value="tsv"> TSV </option>
+        </select>
+        <h3>Dataset:</h3>
+        <input type="checkbox" nam ="dataset" value=tph1p_v_N2> <i>tph-1p::xbp-1</i> </input>
+        <input type="checkbox" name="dataset" value=dat1p_v_N2> <i>dat-1p::xbp-1</i> </input>
+        <input type="checkbox" name="dataset" value=dat1p_tph1p_v_N2> <i>dat-1p::xbp-1</i> </input>
+        <input type="checkbox" name="dataset" value=rab3p_v_N2> <i>rab-3p::xbp-1</i></input>
+        <input type="checkbox" name="larryDataset" value=eps8_RNAi> <i>eps-8</i> RNAi
+        <h3><i>columns:</i></h3>
+        <input type="checkbox" name="column" value="baseMean"> <label> baseMean </label>
+        <input type="checkbox" name="column" value="log2FoldChange"> <label> log2FoldChange </label>
+        <input type="checkbox" name="column" value="lfcSE"> <label> lfcSE </label>
+        <input type="checkbox" name="column" value="stat"> <label> stat </label>
+        <input type="checkbox" name="column" value="pvalue"> <label> pvalue </label>
+        <input type="checkbox" name="column" value="padj"> <label> padj </label>
+        <br>
+        genes:<br>
+        <textarea name="genes"></textarea><br>
+        additional parameters, these will be appended to the end of the sql statement:<br>
+        <textarea name="additional_params"></textarea><br>
+        <input type="submit" value="Submit"><br>
+    </form>
+  </div>
+</body>
