@@ -32,19 +32,19 @@ def serve_info():
 def serve_db_info():
     return service.get_db_info().to_html()
 
-@app.route('/sql', methods=['GET', 'POST'])
-def custom_sql():
-    if request.method == 'POST':
-        query = request.form
-        result, sql_statement = service.parse_custom_query(query)
-        resp = make_response(result.to_csv(sep="\t"))
-        resp.headers["Content-Disposition"] = "attachment; filename=result.txt"
-        resp.headers["Content-Type"] = "text/csv"
-        if query['download_type']=="tsv":
-            return resp
-        else:
-            return '''{}<br> the SQL statement used was:<br>{}'''.format(result.to_html(), sql_statement)
-    return render_template("sql.html") 
+# @app.route('/sql', methods=['GET', 'POST'])
+# def custom_sql():
+#     if request.method == 'POST':
+#         query = request.form
+#         result, sql_statement = service.parse_custom_query(query)
+#         resp = make_response(result.to_csv(sep="\t"))
+#         resp.headers["Content-Disposition"] = "attachment; filename=result.txt"
+#         resp.headers["Content-Type"] = "text/csv"
+#         if query['download_type']=="tsv":
+#             return resp
+#         else:
+#             return '''{}<br> the SQL statement used was:<br>{}'''.format(result.to_html(), sql_statement)
+#     return render_template("sql.html") 
     
 
 if __name__ == "__main__":        # on running python app.py
