@@ -11,7 +11,7 @@ def create_connection(host_name, user_name, user_password):
             user=user_name,
             passwd=user_password,
             database='gene_data',
-            port=6603,
+            port=3306,
 
         )
         print("Connection to MySQL DB successful")
@@ -28,7 +28,7 @@ class geneModel:
     
     def __init__(self):
         with open ("credentials.txt","r") as myfile: passwd = myfile.readlines()[0]
-        self.conn = create_connection('localhost', 'web_app', passwd)
+        self.conn = create_connection('gene_data_mysql', 'web_app', passwd)
         self.cursor = self.conn.cursor(buffered=True)
     
     def join_data(self, columns: list, tables: list, genes: list, additional_params="") -> pd.DataFrame:

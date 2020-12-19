@@ -12,7 +12,7 @@ def hello():                      # call method hello
 def mine():
     if request.method == 'POST':  #this block is only entered when the form is submitted
         query = request.form
-        
+
         result, sql_statement = service.parse_query(query)
         resp = make_response(result.to_csv(sep="\t"))
         resp.headers["Content-Disposition"] = "attachment; filename=result.txt"
@@ -45,7 +45,7 @@ def serve_db_info():
 #         else:
 #             return '''{}<br> the SQL statement used was:<br>{}'''.format(result.to_html(), sql_statement)
 #     return render_template("sql.html") 
-    
+
 
 if __name__ == "__main__":        # on running python app.py
-      app.run(debug=True)
+      app.run(host = '0.0.0.0', port = 5001, debug=True)
