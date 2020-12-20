@@ -53,6 +53,4 @@ def parse_query(query):
 
 def get_db_info():
     db = models.geneModel()
-    db.cursor.close()
-    db.conn.close()
     return db.get_info()
