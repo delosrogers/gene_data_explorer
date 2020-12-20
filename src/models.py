@@ -31,7 +31,11 @@ class geneModel:
         self.conn = create_connection('gene_data_mysql', 'web_app', passwd)
         self.cursor = self.conn.cursor(buffered=True)
     
-    def join_data(self, columns: list, tables: list, genes: list, additional_params="") -> pd.DataFrame:
+    def join_data(self, columns: list, tables: list, genes: list, additional_params="", return_missing=False) -> pd.DataFrame:
+        if return_missing:
+            join_method = " LEFT OUTER JOIN "
+        else:
+            join_method= " INNER JOIN "
         sql_q = "SELECT"
         #create the correct amount of column feilds
         for i in range(len(columns)-1):
@@ -39,7 +43,7 @@ class geneModel:
         sql_q = sql_q + " " + columns[len(columns)-1] + " FROM genes"
         #create the correct number of join table feilds
         for i in tables:
-            sql_q = sql_q + " INNER JOIN "+ i + " USING (gid)"
+            sql_q = sql_q + join_method + i + " USING (gid)"
         if genes[0] != '' or len(genes)>1 or additional_params != '' or len(additional_params)>1:
             sql_q = sql_q + " WHERE "
         #df = self.make_query(sql_q, columns, genes=genes, additional_params=additional_params)

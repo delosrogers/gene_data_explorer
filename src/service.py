@@ -6,6 +6,7 @@ def parse_query(query):
     larryTables = query.getlist('larryDataset')
     initial_columns = query.getlist('column')
     additional_params = query['additional_params']
+    return_missing = query['return_missing'] == "True"
     if len(additional_params.split(";"))>1:
         raise Exception("Not allowed to use semicolons")
     q_list = list(query.values())
@@ -28,7 +29,7 @@ def parse_query(query):
     genes_str = query['genes']
     genes = genes_str.split('\r\n')
     db = models.geneModel() 
-    df, sql_statement = db.join_data(columns, tables, genes, additional_params=additional_params)
+    df, sql_statement = db.join_data(columns, tables, genes, additional_params=additional_params, return_missing=return_missing)
     db.cursor.close()
     db.conn.close()
     return df, sql_statement
@@ -53,4 +54,7 @@ def parse_query(query):
 
 def get_db_info():
     db = models.geneModel()
-    return db.get_info()
+    res = db.get_info()
+    db.cursor.close()
+    db.conn.close()
+    return res
