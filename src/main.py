@@ -10,7 +10,7 @@ def hello():                      # call method hello
 
 @app.route('/mine', methods=['GET', 'POST']) #allow both GET and POST requests
 def mine():
-    return service.db_form(request, "RNAi.html")
+    return service.db_form(request, "mine.html")
 
 @app.route('/rnai', methods=['GET', 'POST'])
 def rnai():
