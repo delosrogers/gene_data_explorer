@@ -5,10 +5,29 @@ from flask import make_response
 def parse_query(query):
     print(query)
     tables = query.getlist('dataset')
+    return_missing = query.get('return_missing')
+    if query.get("RNAi"):
+        columns = []
+        if "Vidal_RNAi" in tables:
+            columns += "Vidal_RNAi.CeRNAi_Plate ceRNAi_Row ceRNAi_Col".split(" ")
+        if "Ahringer_RNAi" in tables:
+            columns += "Ahringer_RNAi.Plate Ahringer_RNAi.Well".split(" ")
+        additional_params=""
+    else:
+        columns, tables = _make_table_and_col_lists(query)
+    genes_str = query['genes']
+    genes = genes_str.split('\r\n')
+    db = models.geneModel() 
+    df, sql_statement = db.join_data(columns, tables, genes, additional_params=additional_params, return_missing=return_missing)
+    db.cursor.close()
+    db.conn.close()
+    df.sort_values(by=df.columns[0], inplace=True)
+    return df, sql_statement
+
+def _make_table_and_col_lists(query):
     larryTables = query.getlist('larryDataset')
     initial_columns = query.getlist('column')
     additional_params = query['additional_params']
-    return_missing = query['return_missing']
     if len(additional_params.split(";"))>1:
         raise Exception("Not allowed to use semicolons")
     q_list = list(query.values())
@@ -28,14 +47,7 @@ def parse_query(query):
     tables += larryTables
     tables = list(set(tables))
     print(tables)
-    genes_str = query['genes']
-    genes = genes_str.split('\r\n')
-    db = models.geneModel() 
-    df, sql_statement = db.join_data(columns, tables, genes, additional_params=additional_params, return_missing=return_missing)
-    db.cursor.close()
-    db.conn.close()
-    df.sort_values(by=df.columns[0], inplace=True)
-    return df, sql_statement
+    return colums, tables
 
 # def parse_custom_query(form):
 #     q_list = form['query'].split(" ")
