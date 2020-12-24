@@ -10,19 +10,11 @@ def hello():                      # call method hello
 
 @app.route('/mine', methods=['GET', 'POST']) #allow both GET and POST requests
 def mine():
-    if request.method == 'POST':  #this block is only entered when the form is submitted
-        query = request.form
+    return service.db_form(request, "RNAi.html")
 
-        result, sql_statement = service.parse_query(query)
-        resp = make_response(result.to_csv(sep="\t"))
-        resp.headers["Content-Disposition"] = "attachment; filename=result.txt"
-        resp.headers["Content-Type"] = "text/csv"
-        if query['download_type']=="tsv":
-            return resp
-        else:
-            return '''{}<br> the SQL statement used was:<br>{}'''.format(result.to_html(), sql_statement)
-
-    return render_template("mine.html")
+@app.route('/rnai', methods=['GET', 'POST'])
+def rnai():
+    return service.db_form(request, "RNAi.html")
 
 @app.route('/analysis_info')
 def serve_info():

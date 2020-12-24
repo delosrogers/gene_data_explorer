@@ -1,0 +1,26 @@
+<body>
+    <div class="container">
+      <form method="POST" class="form-group">
+          <h3>What form do you want your results?</h3>
+          <select name="download_type">
+            <option value="html">HTML</option>
+            <option value="tsv"> TSV </option>
+          </select>
+          <h3>Dataset:</h3>
+          <div class="form-check-inline">
+          <input type="checkbox" name="dataset" value="Vidal_RNAi"> <i>tph-1p::xbp-1</i> </input>
+          </div>
+          <br>
+          <h3>would you like to return genes that aren't in all datasets?</h3>
+          <select name="return_missing">
+              <option value="True">yes</option>
+              <option value="False">no</option>
+          </select>
+          genes:<br>
+          <textarea name="genes"></textarea><br>
+          additional parameters, these will be appended to the end of the sql statement (if you are using a gene list your parameters need to start with 'AND'):<br>
+          <textarea name="additional_params"></textarea><br>
+          <input type="submit" value="Submit"><br>
+      </form>
+    </div>
+  </body>

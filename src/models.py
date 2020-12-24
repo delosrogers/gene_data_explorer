@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 import pandas as pd
 import sql_resources
+import platform
 
 def create_connection(host_name, user_name, user_password):
     connection = None
@@ -28,13 +29,17 @@ class geneModel:
     
     def __init__(self):
         with open ("credentials.txt","r") as myfile: passwd = myfile.readlines()[0]
-        self.conn = create_connection('gene_data_mysql', 'web_app', passwd)
+        if platform.system() == 'Linux':
+            self.conn = create_connection('gene_data_mysql', 'web_app', passwd)
+        else:
+            self.conn = create_connection('localhost', 'web_app', passwd)
         self.cursor = self.conn.cursor(buffered=True)
     
-    def join_data(self, columns: list, tables: list, genes: list, additional_params="", return_missing=False) -> pd.DataFrame:
-        if return_missing:
+    def join_data(self, columns: list, tables: list, genes: list, additional_params="", return_missing="False") -> pd.DataFrame:
+        #set SQL join method based off the return_missing paramaeter
+        if return_missing == "True":
             join_method = " LEFT OUTER JOIN "
-        else:
+        elif return_missing == "False":
             join_method= " INNER JOIN "
         sql_q = "SELECT"
         #create the correct amount of column feilds
