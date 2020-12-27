@@ -4,3 +4,4 @@ src/credentials.txt
 gene_data.12-7-2020.sql 
 *.xlsx
 *.csv
+.DS_Store
