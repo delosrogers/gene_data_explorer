@@ -1,7 +1,4 @@
-from flask import Flask           # import flask
-from flask import render_template
-from flask import request
-from flask import make_response
+from flask import Flask, render_template, request, make_response          # import flask
 import service
 app = Flask(__name__)             # create an app instance
 @app.route("/")                   # at the end point /

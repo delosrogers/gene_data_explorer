@@ -157,7 +157,7 @@ def column_to_list(column):
 
 def replace_nan_with_none(l : list) -> list:
     for i in range(len(l)):
-        if (pd.isna(l[i]) or l[i] == "?" or l[i] == "-?"):
+        if (pd.isna(l[i]) or l[i] == "?" or l[i] == "-?" or l[i] == "nan"):
             l[i] = None
             #print("encountered a non integer or float")
     return l

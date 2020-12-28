@@ -1,10 +1,11 @@
 import importlib
-importlib.import_module('..models', 'src')
-importlib.import_module('..service', 'src')
+import models
+import service
 from werkzeug.datastructures import MultiDict
 import numpy as np
 from pathlib import Path
 import pandas as pd
+import math
 
 def test_parse_query_RNAi():
     #tests wether by passing columns and genes to the parse query function you can do a library lookup
@@ -15,14 +16,28 @@ def test_parse_query_RNAi():
     print(real_result)
     assert np.array_equal(np.array(df),real_result)
 
-def test_parse_query_RNAi_vidal_ahringer()
+def test_parse_query_RNAi_vidal_ahringer():
     #tests wether by passing columns and genes to the parse query function you can do a library lookup
     real_result_df = pd.read_csv(Path('./test_data/RNAi_lookup_test_data.csv'))
-    genes = list(real_result['Gene ID'])
+    genes = list(real_result_df['Gene ID'])
     gene_str = "\r\n".join(genes)
-    query_dict = MultiDict([("dataset", "Vidal_RNAi"), ("dataset", "Ahringer_RNAi"),("genes", gene_str),("return_missing","True"),("additional_params", "")])
+    query_dict = MultiDict([("dataset", "Vidal_RNAi"), ("dataset", "Ahringer_RNAi"),("genes", gene_str),("return_missing","True"),("additional_params", ""),("RNAi", "RNAi_screen")])
     df, stmnt = service.parse_query(query_dict)
-    real_result = np.array(real_result_df))
+    for i in real_result_df.index:
+        for j in real_result_df.columns:
+            if real_result_df.loc[i,j] is None or pd.isna(real_result_df.loc[i, j]) or  real_result_df.loc[i,j] == "nan":
+                print(real_result_df.loc[i,j])
+                print(type(real_result_df.loc[i,j]))
+                real_result_df.loc[i, j] = "None"
+    for i in df.index:
+        
+        for j in df.columns:
+            print(df.loc[i,j])
+            print(type(df.loc[i,j]))
+            if pd.isna(df.loc[i, j]) or df.loc[i,j] == "nan" or df.loc[i,j] is None:
+                df.loc[i, j] = "None"
+    real_result = np.array(real_result_df)
     print(np.array(df))
     print(real_result)
-    assert np.array_equal(np.array(df),real_result)
+    print(np.array(df) == real_result)
+    assert (np.array(df) == real_result).all()
