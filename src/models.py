@@ -51,7 +51,7 @@ class geneModel:
             sql_q = sql_q + join_method + i + " USING (gid)"
         if genes[0] != '' or len(genes)>1 or additional_params != '' or len(additional_params)>1:
             sql_q = sql_q + " WHERE "
-        #df = self.make_query(sql_q, columns, genes=genes, additional_params=additional_params)
+
         if genes[0] != '' or len(genes)>1:
             sql_q += "genes.WormBaseID in ("
             for i in range(len(genes)-1):
@@ -72,23 +72,6 @@ class geneModel:
         df = pd.DataFrame(data=res, columns=columns)
         return df, self.cursor.statement
 
-    def make_query(self, sql_q, columns, genes=None, additional_params=""):
-        if len(genes)>0:
-            sql_q += "genes.WormBaseID in ("
-            for i in range(len(genes)-1):
-                sql_q = sql_q + "%s,"
-            sql_q = sql_q + " %s)"
-        sql_q = sql_q + " " + additional_params +";"
-        values = tuple(genes)
-        try:
-            print(sql_q, values)
-            self.cursor.execute(sql_q, values)
-            res = self.cursor.fetchall()
-        except Error as e:
-            print(f"The error '{e}' occurred")
-            print(self.cursor.statement)
-        df = pd.DataFrame(data=res, columns=columns)
-        return df
 
 
     def get_info(self) -> list:
