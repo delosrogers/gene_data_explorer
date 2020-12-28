@@ -6,7 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <title>Gene Explorer</title>
-  <script src="/static/script.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script> 
+  $(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();
+  });
+  </script>
 </head>
 
 <body>
@@ -19,11 +24,15 @@
         </select>
         <h3>Dataset:</h3>
         <div class="form-check-inline">
-        <input type="checkbox" name="dataset" value=tph1p_v_N2> <i>tph-1p::xbp-1</i> </input>
+        <input type="checkbox" name="dataset" value=tph1p_v_N2> <i>tph-1p::xbp-1</i> <span data-toggle="tooltip">More Info</span></input>
         <input type="checkbox" name="dataset" value=dat1p_v_N2> <i>dat-1p::xbp-1</i> </input>
         <input type="checkbox" name="dataset" value=dat1p_tph1p_v_N2> <i>dat-1p::xbp-1 and tph-1p::xbp-1</i> </input>
         <input type="checkbox" name="dataset" value=rab3p_v_N2> <i>rab-3p::xbp-1</i></input>
-        <input type="checkbox" name="larryDataset" value=eps8_RNAi> <i>eps-8</i> RNAi
+        <input type="checkbox" name="larryDataset" value=eps8_RNAi> <i>eps-8</i> RNAi</input>
+        <input type="checkbox" name="cco1_jmjd_Dataset" value="cco1"> <i>cco-1</i>RNAi</input>
+        <input type="checkbox" name="cco1_jmjd_Dataset" value="sur5::jmjd1.2"> <i>sur-5::jmjd-1.2</i></input>
+        <input type="checkbox" name="cco1_jmjd_Dataset" value="rgef::jmjd1.2"> <i>rgef-1::jmjd-1.2</i></input>
+        <input type="checkbox" name="cco1_jmjd_Dataset" value="jmjd:3.1::jmjd:3.1"> <i>jmjd-3.1::jmjd-3.1</i></input>
         </div>
         <h3>columns:</h3>
         <input type="checkbox" name="column" value="baseMean"> <label> baseMean </label>

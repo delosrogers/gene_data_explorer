@@ -32,17 +32,19 @@ def parse_query(query):
 
 def _make_table_and_col_lists(query, tables, additional_params):
     larryTables = query.getlist('larryDataset')
-    initial_columns = query.getlist('column')
+    cco1_jmjd_tables = query.getlist('cco1_jmjd_Dataset')
+    requested_columns = query.getlist('column')
     if len(additional_params.split(";"))>1:
         raise Exception("Not allowed to use semicolons")
     q_list = list(query.values())
     print(q_list)
     columns = ['genes.WormBaseID', 'genes.GeneName']
     for i in tables:
-        for j in initial_columns:
+        for j in requested_columns:
             columns.append(TABLE_DICT[i] + "." + COLUMN_DICT[j])
+    #translates the checkbox data for Eps-8 into columns for the SQL join
     for i in larryTables:
-        for j in initial_columns:
+        for j in requested_columns:
             if (COLUMN_DICT[j] == 'log2FoldChange'):
                 columns.append(i + "." + COLUMN_DICT["larry_log2FoldChange"])
             elif (COLUMN_DICT[j] == 'pvalue'):
@@ -50,6 +52,25 @@ def _make_table_and_col_lists(query, tables, additional_params):
             elif(COLUMN_DICT[j] == 'padj'):
                 columns.append(i + "." + COLUMN_DICT["Larry_Padj"])
     tables += larryTables
+    #translates the checkbox data for cco1 and jmjd into columns for the SQL join
+    cco1_translation_dict = {
+        'log2FoldChange': 'Log2FC', 
+        'lfcSE': 'LfcSE',
+        'padj': 'Padj',
+        'pvalue': 'Pval',
+        'cco1': 'Cco1',
+        'sur5::jmjd1.2':'Sur5',
+        "rgef::jmjd1.2":'Rgef',
+        "jmjd:3.1::jmjd:3.1":'Jmjd'
+        }
+    if cco1_jmjd_tables:
+        for i in cco1_jmjd_tables:
+            for j in requested_columns:
+                if j in "log2FoldChange pvalue padg lfcSE".split(" "):
+                    col = cco1_translation_dict[i] + cco1_translation_dict[j]
+                    columns.append("cco1_jmjd_RNAseq." + col)
+        tables.append("cco1_jmjd_RNAseq")
+    
     tables = list(set(tables))
     print(tables)
     return columns, tables
