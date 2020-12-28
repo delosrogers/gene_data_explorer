@@ -35,7 +35,7 @@ class geneModel:
             self.conn = create_connection('localhost', 'web_app', passwd)
         self.cursor = self.conn.cursor(buffered=True)
     
-    def join_data(self, columns: list, tables: list, genes: list, additional_params="", return_missing="False") -> pd.DataFrame:
+    def join_data(self, columns: list, tables: list, genes: list, additional_params="", return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:
         #set SQL join method based off the return_missing paramaeter
         if return_missing == "True":
             join_method = " LEFT OUTER JOIN "
@@ -53,7 +53,7 @@ class geneModel:
             sql_q = sql_q + " WHERE "
 
         if genes[0] != '' or len(genes)>1:
-            sql_q += "genes.WormBaseID in ("
+            sql_q += "genes.{gene_type} in (".format(gene_type = gene_type)
             for i in range(len(genes)-1):
                 sql_q = sql_q + "%s,"
             sql_q = sql_q + " %s)"

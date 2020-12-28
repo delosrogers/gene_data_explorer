@@ -38,6 +38,12 @@
             <option value="False">no</option>
             <option value="True">yes</option>
         </select><br>
+        what form are your genes in?
+        <select name="gene_type">
+          <option value="WBID">Worm Base ID</option>
+          <option value="Name">Gene Name</option>
+          <option value="Sequence">Sequence</option>
+        </select>
         genes:<br>
         <textarea name="genes"></textarea><br>
         additional parameters, these will be appended to the end of the sql statement (if you are using a gene list your parameters need to start with 'AND'):<br>

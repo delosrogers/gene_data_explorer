@@ -1,7 +1,7 @@
 import models
 from flask import render_template, Markup
 from flask import make_response
-from config import COLUMN_DICT, TABLE_DICT
+from config import COLUMN_DICT, TABLE_DICT, GENE_TYPE_DICT
 
 def parse_query(query):
     print(query)
@@ -22,8 +22,9 @@ def parse_query(query):
         columns, tables = _make_table_and_col_lists(query, tables, additional_params)
     genes_str = query['genes']
     genes = genes_str.split('\r\n')
-    db = models.geneModel() 
-    df, sql_statement = db.join_data(columns, tables, genes, additional_params=additional_params, return_missing=return_missing)
+    db = models.geneModel()
+    gene_type = GENE_TYPE_DICT[query.get('gene_type')] 
+    df, sql_statement = db.join_data(columns, tables, genes, additional_params=additional_params, return_missing=return_missing, gene_type=gene_type)
     db.cursor.close()
     db.conn.close()
     df.sort_values(by=df.columns[0], inplace=True)

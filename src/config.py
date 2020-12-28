@@ -29,3 +29,9 @@ TABLE_DICT = {
     'rab3p_v_N2':'rab3p_v_N2',
     'tph1p_v_N2':'tph1p_v_N2',
 }
+
+GENE_TYPE_DICT = {
+    'WBID': 'WormBaseID',
+    'Name': 'GeneName',
+    'Sequence': 'sequence'
+}
