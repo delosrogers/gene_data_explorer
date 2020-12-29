@@ -22,11 +22,8 @@ def parse_query(query):
         columns, tables = _make_table_and_col_lists(query, tables, additional_params)
     genes_str = query['genes']
     genes = genes_str.split('\r\n')
-    db = models.geneModel()
     gene_type = GENE_TYPE_DICT[query.get('gene_type')] 
-    df, sql_statement = db.join_data(columns, tables, genes, additional_params=additional_params, return_missing=return_missing, gene_type=gene_type)
-    db.cursor.close()
-    db.conn.close()
+    df, sql_statement = models.join_data(columns, tables, genes, additional_params=additional_params, return_missing=return_missing, gene_type=gene_type)
     df.sort_values(by=df.columns[0], inplace=True)
     return df, sql_statement
 
@@ -83,6 +80,7 @@ def get_db_info():
     return res
 
 def db_form(request, file):
+#used to make and parse post requests from the forms used to query RNAseq and RNAi data
     if request.method == 'POST':  #this block is only entered when the form is submitted
         query = request.form
 

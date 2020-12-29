@@ -3,26 +3,60 @@ from mysql.connector import Error
 import pandas as pd
 import sql_resources
 import platform
-
-def create_connection(host_name, user_name, user_password):
-    connection = None
-    try:
-        connection = mysql.connector.connect(
-            host=host_name,
-            user=user_name,
-            passwd=user_password,
-            database='gene_data',
-            port=3306,
-
-        )
-        print("Connection to MySQL DB successful")
-    except Error as e:
-        print(f"The error '{e}' occurred")
-
-    return connection
+from flask import Flask, g
+from flask_sqlalchemy import SQLAlchemy
+from flask import current_app as app
+from main import db
 
 
+class genes(db.Model):
+    __tablename__ = 'genes'
 
+class cco1_jmjd_RNAseq(db.Model):
+    __tablename__ = 'cco1_jmjd_RNAseq'
+
+class Ahringer_RNAi(db.Model):
+    __tablename__ = 'Ahringer_RNAi'
+
+class Vidal_RNAi(db.Model):
+    __tablename__ = 'Vidal_RNAi'
+
+class dat1p_tph1p_v_N2(db.Model):
+    __tablename__ = 'dat1p_tph1p_v_N2'
+
+class dat1p_v_N2(db.Model):
+    __tablename__ = 'dat1p_v_N2'
+
+class eps8_RNAi(db.Model):
+    __tablename__ = 'eps8_RNAi'
+
+class human_genes(db.Model):
+    __tablename__ = 'human_genes'
+
+class human_mito_stress(db.Model):
+    __tablename__ = 'human_mito_stress'
+
+class rab3p_v_N2(db.Model):
+    __tablename__ = 'rab3p_v_N2'
+
+class tph1p_v_N2(db.Model):
+    __tablename__ = 'tph1p_v_N2'
+
+
+
+
+def join_data(columns: list, tables: list, genes: list, additional_params="", return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:
+    q = g.db.session.query(*columns)
+    for i in tables:
+        i = [i, gene_table.gid == i.gid]
+    for join_args in joins:
+        q = q.join(*join_args)
+    translate_genes = {'WormBaseID': gene_table.WormBaseID, 'GeneName': gene_table.GeneName, 'sequence': gene_table.sequence}
+    gene_type = translate_genes[gene_type]
+    gene_tuple = tuple(genes)
+    q = q.filter(gene_type.in_(gene_tuple)).all()
+    df = q.fetchall
+    return df, ""
 
 
 class geneModel:
