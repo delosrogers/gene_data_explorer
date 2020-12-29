@@ -6,7 +6,11 @@ import platform
 from flask import Flask, g
 from flask_sqlalchemy import SQLAlchemy
 from flask import current_app as app
-from main import db
+from gene_data_explorer import app 
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://web_app:{passwd}@{host}:3306/gene_data'.format(passwd = passwd, host=host)
+app.app_context():
+db=SQLAlchemy(app)
 
 
 class genes(db.Model):
@@ -46,7 +50,7 @@ class tph1p_v_N2(db.Model):
 
 
 def join_data(columns: list, tables: list, genes: list, additional_params="", return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:
-    q = g.db.session.query(*columns)
+    q = db.session.query(*columns)
     for i in tables:
         i = [i, gene_table.gid == i.gid]
     for join_args in joins:

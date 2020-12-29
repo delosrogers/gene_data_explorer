@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, make_response, g          # i
 from flask_sqlalchemy import SQLAlchemy
 import platform
 import service
+from gene_data_explorer import app
 
 
 
@@ -15,12 +16,10 @@ def hello():                      # call method hello
 
 @app.route('/mine', methods=['GET', 'POST']) #allow both GET and POST requests
 def mine():
-    g.db = db
     return service.db_form(request, "mine.html")
 
 @app.route('/rnai', methods=['GET', 'POST'])
 def rnai():
-    g.db = db
     return service.db_form(request, "RNAi.html")
 
 @app.route('/analysis_info')
@@ -47,19 +46,4 @@ def serve_db_info():
 
 
 if __name__ == "__main__":        # on running python app.py
-    
-    def init_app():
-        global app
-        global db
-        app = Flask(__name__)
-        with open ("credentials.txt","r") as myfile: passwd = myfile.readlines()[0]
-        if platform.system() == 'Linux':
-            host = 'gene_data_mysql'
-        else:
-            host = 'localhost'
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://web_app:{passwd}@{host}:3306/gene_data'.format(passwd = passwd, host=host)
-        with app.app_context():
-            db=SQLAlchemy(app)
-        return [app, db]
-    
     app.run(host = '0.0.0.0', port = 80, debug=True)
