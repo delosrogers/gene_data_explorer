@@ -1,7 +1,7 @@
-import models
+import gene_data_explorer.models as models
 from flask import render_template, Markup
 from flask import make_response
-from config import COLUMN_DICT, TABLE_DICT, GENE_TYPE_DICT
+from gene_data_explorer.config import COLUMN_DICT, TABLE_DICT, GENE_TYPE_DICT
 
 def parse_query(query):
     print(query)
@@ -24,7 +24,9 @@ def parse_query(query):
     genes = genes_str.split('\r\n')
     gene_type = GENE_TYPE_DICT[query.get('gene_type')] 
     df, sql_statement = models.join_data(columns, tables, genes, additional_params=additional_params, return_missing=return_missing, gene_type=gene_type)
-    df.sort_values(by=df.columns[0], inplace=True)
+    """ if len(df)>1:
+        print('{type_} here'.format(type_=type(df.loc[0,df.columns[0]])))
+        df = df.sort_values(by = df.columns[0], axis = 0, ascending = True) """
     return df, sql_statement
 
 def _make_table_and_col_lists(query, tables, additional_params):

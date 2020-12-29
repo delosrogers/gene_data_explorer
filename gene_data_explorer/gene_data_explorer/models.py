@@ -1,19 +1,15 @@
 import mysql.connector
 from mysql.connector import Error
 import pandas as pd
-import sql_resources
 import platform
-from flask import Flask, g
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask import current_app as app
-from gene_data_explorer import app 
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://web_app:{passwd}@{host}:3306/gene_data'.format(passwd = passwd, host=host)
-app.app_context():
-db=SQLAlchemy(app)
+from gene_data_explorer import app, db
+#from sqlalchemy.ext.automap impor
+# t automap_base
 
 
-class genes(db.Model):
+""" class genes(db.Model):
     __tablename__ = 'genes'
 
 class cco1_jmjd_RNAseq(db.Model):
@@ -44,22 +40,34 @@ class rab3p_v_N2(db.Model):
     __tablename__ = 'rab3p_v_N2'
 
 class tph1p_v_N2(db.Model):
-    __tablename__ = 'tph1p_v_N2'
+    __tablename__ = 'tph1p_v_N2' """
+
+db_translate = {
+
+}
 
 
-
-
-def join_data(columns: list, tables: list, genes: list, additional_params="", return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:
+def join_data(columns: list, tables: list, gene_list: list, additional_params="", return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:
+    for i in range(len(columns)):
+        #takes columns which are in table.colname format split them by the dot and then use
+        #getattr to turn it into a object.
+        temp_list = columns[i].split(".")
+        columns[i] = getattr(db.Model.classes, temp_list[0])
+        columns[i] = getattr(columns[i], temp_list[1])
     q = db.session.query(*columns)
-    for i in tables:
-        i = [i, gene_table.gid == i.gid]
-    for join_args in joins:
+    genes = db.Model.classes.genes
+    print(type(genes.gid))
+    for i in range(len(tables)):
+        table = getattr(db.Model.classes, tables[i])
+        tables[i] = [table, genes.gid == table.gid]
+    for join_args in tables:
         q = q.join(*join_args)
-    translate_genes = {'WormBaseID': gene_table.WormBaseID, 'GeneName': gene_table.GeneName, 'sequence': gene_table.sequence}
+    translate_genes = {'WormBaseID': genes.WormBaseID, 'GeneName': genes.GeneName, 'sequence': genes.sequence}
     gene_type = translate_genes[gene_type]
-    gene_tuple = tuple(genes)
-    q = q.filter(gene_type.in_(gene_tuple)).all()
-    df = q.fetchall
+    gene_tuple = tuple(gene_list)
+    q = q.filter(gene_type.in_(gene_tuple)).order_by(genes.WormBaseID.asc()).all()
+    df = pd.DataFrame.from_records(q, columns=columns)
+    print(df)
     return df, ""
 
 

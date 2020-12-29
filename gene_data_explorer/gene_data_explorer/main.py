@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, make_response, g          # import flask
 from flask_sqlalchemy import SQLAlchemy
 import platform
-import service
+import gene_data_explorer.service as service
 from gene_data_explorer import app
+
 
 
 
