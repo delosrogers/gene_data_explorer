@@ -26,8 +26,6 @@ def test_parse_query_RNAi_vidal_ahringer():
     for i in real_result_df.index:
         for j in real_result_df.columns:
             if real_result_df.loc[i,j] is None or pd.isna(real_result_df.loc[i, j]) or  real_result_df.loc[i,j] == "nan":
-                print(real_result_df.loc[i,j])
-                print(type(real_result_df.loc[i,j]))
                 real_result_df.loc[i, j] = "None"
     for i in df.index:
         
@@ -41,3 +39,51 @@ def test_parse_query_RNAi_vidal_ahringer():
     print(real_result)
     print(np.array(df) == real_result)
     assert (np.array(df) == real_result).all()
+
+def test_parse_query_RNAseq_data():
+    real_result_df = pd.read_csv(Path('./gene_data_explorer/test_data/RNAseq_data_test_outer_join.csv'))
+    genes = list(real_result_df['WBID'])
+    gene_str = "\r\n".join(genes)
+    query_dict = MultiDict([
+        ("dataset","tph1p_v_N2"),
+        ("dataset","dat1p_v_N2"),
+        ("dataset","dat1p_tph1p_v_N2"),
+        ("dataset","rab3p_v_N2"),
+        ("larryDataset","eps8_RNAi"),
+        ("cco1_jmjd_Dataset","sur5::jmjd1.2"),
+        ("cco1_jmjd_Dataset","rgef::jmjd1.2"),
+        ("column","log2FoldChange"),
+        ("column","pvalue"),
+        ("column","padj"),
+        ("genes", gene_str),
+        ("additional_params",""),
+        ("gene_type","WBID"),
+        ("return_missing","True")
+        ])
+    print(query_dict)
+    df, stmt = service.parse_query(query_dict)
+    real_result = np.array(real_result_df)
+
+
+    for i in real_result_df.index:
+        for j in real_result_df.columns:
+            if real_result_df.loc[i,j] is None or pd.isna(real_result_df.loc[i, j]) or  real_result_df.loc[i,j] == "nan":
+                real_result_df.loc[i, j] = -1
+    for i in df.index:
+        
+        for j in df.columns:
+            if pd.isna(df.loc[i, j]) or df.loc[i,j] == "nan" or df.loc[i,j] is None:
+                df.loc[i, j] = -1
+    
+    arr = np.array(df[df.columns[2:20]]).astype(float)
+    real_result = np.array(real_result_df[real_result_df.columns[2:20]]).astype(float)
+    sentinal = True
+    print(arr)
+    print(real_result)
+    for i in range(len(arr)):
+        for j in range(len(arr[i])):
+            
+            sentinal = sentinal and math.isclose(float(arr[i, j]), float(real_result[i, j]), rel_tol=1E-02)
+            print(math.isclose(float(arr[i, j]), float(real_result[i, j]), rel_tol=1E-02))
+    
+    assert sentinal
