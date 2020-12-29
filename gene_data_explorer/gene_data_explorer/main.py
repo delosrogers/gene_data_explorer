@@ -5,10 +5,8 @@ import gene_data_explorer.service as service
 from gene_data_explorer import app
 
 
-
-
-
       #import service after app and db are initialized
+
 
 
 @app.route("/")                   # at the end point /
@@ -47,4 +45,5 @@ def serve_db_info():
 
 
 if __name__ == "__main__":        # on running python app.py
-    app.run(host = '0.0.0.0', port = 80, debug=True)
+    port = int(os.environ.get('PORT',5000))
+    app.run(host='0.0.0.0', port = port)

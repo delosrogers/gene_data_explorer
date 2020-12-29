@@ -3,4 +3,5 @@ mysql-connector-python
 pandas
 configparser
 flask-sqlalchemy
+flask-socketio
 mysqlclient

@@ -60,8 +60,15 @@ def join_data(columns: list, tables: list, gene_list: list, additional_params=""
     for i in range(len(tables)):
         table = getattr(db.Model.classes, tables[i])
         tables[i] = [table, genes.gid == table.gid]
-    for join_args in tables:
-        q = q.join(*join_args)
+    
+    #outer or inner join:
+    if return_missing == "True":
+        for join_args in tables:
+            q = q.outerjoin(*join_args)
+    elif return_missing == "False":
+        for join_args in tables:
+            q = q.join(*join_args)
+        
     translate_genes = {'WormBaseID': genes.WormBaseID, 'GeneName': genes.GeneName, 'sequence': genes.sequence}
     gene_type = translate_genes[gene_type]
     gene_tuple = tuple(gene_list)
