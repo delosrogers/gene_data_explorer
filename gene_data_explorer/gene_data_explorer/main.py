@@ -29,6 +29,11 @@ def serve_info():
 def serve_db_info():
     return service.get_db_info().to_html()
 
+@app.route('/gene_info')
+def gene_info():
+    gene = request.args.get("gene")
+    return service.get_gene_info(gene)
+
 # @app.route('/sql', methods=['GET', 'POST'])
 # def custom_sql():
 #     if request.method == 'POST':

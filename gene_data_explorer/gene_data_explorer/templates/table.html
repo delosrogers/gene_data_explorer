@@ -7,14 +7,35 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <title>Gene Explorer</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
   <div class="container">
   <h1>Gene Explorer</h1>
-  {{table}}
-  <br> the SQL statement used was:<br>
-  {{sql_statement}}
+  <table>
+    <tr>
+        {% for col in column_names %}
+        <th> {{col}} </th>
+        {% endfor %}
+    </tr>
+    {% for row in row_data %}
+    <tr>
+        {% for col, row_ in zip(column_names, row) %}
+        {% if link_column|string() == col|string() %}
+        <td>
+            <a href="/gene_info?gene={{row_}}"> {{row_}} </a>
+        </td>
+        {% else %}
+        <td>{{row_}}</td>
+        {% endif %}
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    <!-- {{table}} -->
+
+</table>
+
 </div>
 </body>
 

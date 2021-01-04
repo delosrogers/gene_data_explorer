@@ -52,8 +52,8 @@ def join_data(columns: list, tables: list, gene_list: list, additional_params=""
         #takes columns which are in table.colname format split them by the dot and then use
         #getattr to turn it into a object.
         temp_list = columns[i].split(".")
-        columns[i] = getattr(db.Model.classes, temp_list[0])
-        columns[i] = getattr(columns[i], temp_list[1])
+        tmp_table = getattr(db.Model.classes, temp_list[0])
+        columns[i] = getattr(tmp_table, temp_list[1])
     q = db.session.query(*columns)
     genes = db.Model.classes.genes
     print(type(genes.gid))
@@ -77,6 +77,15 @@ def join_data(columns: list, tables: list, gene_list: list, additional_params=""
     print(df)
     return df, ""
 
+def get_gene_info(gene):
+    
+    genes = db.Model.classes.genes
+    columns = [genes.WormBaseID]
+    columns.append(genes.GeneName)
+    q = db.session.query(*columns)
+    res = q.filter(genes.WormBaseID == gene).all()
+    df = pd.DataFrame.from_records(res, columns=columns)
+    return df
 
 class geneModel:
     

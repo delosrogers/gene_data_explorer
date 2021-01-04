@@ -87,12 +87,16 @@ def db_form(request, file):
         query = request.form
 
         result, sql_statement = parse_query(query)
-        resp = make_response(result.to_csv(sep="\t"))
-        resp.headers["Content-Disposition"] = "attachment; filename=result.txt"
-        resp.headers["Content-Type"] = "text/csv"
         if query['download_type']=="tsv":
+            resp = make_response(result.to_csv(sep="\t"))
+            resp.headers["Content-Disposition"] = "attachment; filename=result.txt"
+            resp.headers["Content-Type"] = "text/csv"
             return resp
         else:
-            return render_template('table.html',table = Markup(result.to_html()), sql_statement = sql_statement)
+            return render_template('table.html', column_names=result.columns.values, row_data=list(result.values.tolist()), link_column="genes.WormBaseID", zip=zip)
 
-    return render_template("{}".format(file))
+    return render_template(file)
+
+def get_gene_info(gene):
+    result = models.get_gene_info(gene)
+    return render_template('table.html', column_names=result.columns.values, row_data=list(result.values.tolist()), link_column="", zip=zip)
