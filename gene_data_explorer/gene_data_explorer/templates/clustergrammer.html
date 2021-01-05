@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Clustergrammer.js</title>
+
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="static/clustergrammer/lib/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/clustergrammer/lib/css/bootstrap.css">
+    <link rel="stylesheet" href="static/clustergrammer/css/custom.css">
+
+</head>
+
+<body>
+    <div class="container">
+
+  <div id='container-id-1'>
+      <h1 class='wait_message'>Please wait ...</h1>
+  </div>
+
+
+  <!-- Required JS Libraries -->
+  <script src="static/clustergrammer/lib/js/d3.js"></script>
+  <script src="static/clustergrammer/lib/js/jquery-1.11.2.min.js"></script>
+  <script src="static/clustergrammer/lib/js/underscore-min.js"></script>
+  <script src="static/clustergrammer/lib/js/bootstrap.min.js"></script>
+
+  <!-- Clustergrammer JS -->
+  <script src='static/clustergrammer/clustergrammer.js'></script>
+
+  <!-- optional modules -->
+  <script src='static/clustergrammer/js/Enrichrgram.js'></script>
+  <script src='static/clustergrammer/js/hzome_functions.js'></script>
+  <script src='static/clustergrammer/js/send_to_Enrichr.js'></script>
+
+  <!-- make clustergram -->
+
+
+    <span style="display:none" id="viz_json">{{viz}}</span>
+    <div class=clustergrammer id="clustergrammerDisplay"></div>
+    <script src='static/load_clustergram.js'></script>
+    </div>
+    </body>
+</html>

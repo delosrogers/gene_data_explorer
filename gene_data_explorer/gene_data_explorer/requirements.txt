@@ -5,3 +5,4 @@ configparser
 flask-sqlalchemy
 flask-socketio
 mysqlclient
+clustergrammer

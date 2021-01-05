@@ -1,7 +1,10 @@
 credentials.txt
+credentials.py
 src/credentials.txt
 .vscode/
 gene_data.12-7-2020.sql 
 *.xlsx
 *.csv
 .DS_Store
+gene_data_explorer/gene_data_explorer/static/clustergrammer/
+node_modules/
