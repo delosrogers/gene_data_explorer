@@ -13,3 +13,8 @@ td, th {
 tr:nth-child(even) {
     background-color: #dddddd;
 }
+
+#clustergrammerDisplay {
+    height: 500px;
+    width: 1000px;
+} 

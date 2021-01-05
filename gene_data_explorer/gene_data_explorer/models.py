@@ -5,6 +5,7 @@ import platform
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from gene_data_explorer import app, db
+from copy import deepcopy
 #from sqlalchemy.ext.automap impor
 # t automap_base
 
@@ -48,6 +49,7 @@ db_translate = {
 
 
 def join_data(columns: list, tables: list, gene_list: list, additional_params="", return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:
+    column_names=deepcopy(columns) #current column list will get converted to ORM objects and I need the strings to name df columns
     for i in range(len(columns)):
         #takes columns which are in table.colname format split them by the dot and then use
         #getattr to turn it into a object.
@@ -72,8 +74,9 @@ def join_data(columns: list, tables: list, gene_list: list, additional_params=""
     translate_genes = {'WormBaseID': genes.WormBaseID, 'GeneName': genes.GeneName, 'sequence': genes.sequence}
     gene_type = translate_genes[gene_type]
     gene_tuple = tuple(gene_list)
-    q = q.filter(gene_type.in_(gene_tuple)).order_by(genes.WormBaseID.asc()).all()
-    df = pd.DataFrame.from_records(q, columns=columns)
+    q = q.filter(gene_type.in_(gene_tuple)).order_by(genes.WormBaseID.asc())
+    df = pd.read_sql(q.statement, db.session.bind)
+    df.columns=column_names
     print(df)
     return df, ""
 

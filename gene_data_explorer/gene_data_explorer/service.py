@@ -2,6 +2,7 @@ import gene_data_explorer.models as models
 from flask import render_template, Markup
 from flask import make_response
 from gene_data_explorer.config import COLUMN_DICT, TABLE_DICT, GENE_TYPE_DICT
+from clustergrammer2  import Network
 
 def parse_query(query):
     print(query)
@@ -92,6 +93,15 @@ def db_form(request, file):
             resp.headers["Content-Disposition"] = "attachment; filename=result.txt"
             resp.headers["Content-Type"] = "text/csv"
             return resp
+        elif query['download_type'] == "clustergrammer":
+            result.set_index('genes.GeneName', inplace=True)
+            result.drop("genes.WormBaseID", inplace=True, axis=1)
+            result.dropna(inplace=True)
+            net = Network()
+            net.load_df(result)
+            net.cluster()
+            viz = net.export_net_json()
+            return render_template('clustergrammer.html', viz=viz)
         else:
             return render_template('table.html', column_names=result.columns.values, row_data=list(result.values.tolist()), link_column="genes.WormBaseID", zip=zip)
 
