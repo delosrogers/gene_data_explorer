@@ -66,7 +66,7 @@ def _make_table_and_col_lists(query, tables, additional_params):
     if cco1_jmjd_tables:
         for i in cco1_jmjd_tables:
             for j in requested_columns:
-                if j in "log2FoldChange pvalue padg lfcSE".split(" "):
+                if j in "log2FoldChange pvalue padj lfcSE".split(" "):
                     col = cco1_translation_dict[i] + cco1_translation_dict[j]
                     columns.append("cco1_jmjd_RNAseq." + col)
         tables.append("cco1_jmjd_RNAseq")
