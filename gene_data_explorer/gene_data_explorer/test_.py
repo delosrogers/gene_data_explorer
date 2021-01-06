@@ -83,7 +83,7 @@ def test_parse_query_RNAseq_data():
     for i in range(len(arr)):
         for j in range(len(arr[i])):
             
-            sentinal = sentinal and math.isclose(float(arr[i, j]), float(real_result[i, j]), rel_tol=1E-02)
-            print(math.isclose(float(arr[i, j]), float(real_result[i, j]), rel_tol=1E-02))
+            sentinal = sentinal and math.isclose(float(arr[i, j]), float(real_result[i, j]), rel_tol=1E-06)
+            print(math.isclose(float(arr[i, j]), float(real_result[i, j]), rel_tol=1E-06))
     
     assert sentinal
