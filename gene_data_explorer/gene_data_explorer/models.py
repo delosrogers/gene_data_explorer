@@ -6,6 +6,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from gene_data_explorer import app, db
 from copy import deepcopy
+from sqlalchemy import Column, Integer, String
 #from sqlalchemy.ext.automap impor
 # t automap_base
 
@@ -43,9 +44,13 @@ class rab3p_v_N2(db.Model):
 class tph1p_v_N2(db.Model):
     __tablename__ = 'tph1p_v_N2' """
 
-db_translate = {
+""" class User(db.Model):
+    __tablename__ = 'users'
 
-}
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+ """
 
 
 def join_data(columns: list, tables: list, gene_list: list, additional_params="", return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:

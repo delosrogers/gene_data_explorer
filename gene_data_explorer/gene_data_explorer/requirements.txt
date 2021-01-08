@@ -1,10 +1,7 @@
 flask
-mysql-connector-python
 pandas
 configparser
 flask-sqlalchemy
-flask-socketio
-mysqlclient
 clustergrammer2
 pymysql
 cryptography
@@ -14,3 +11,8 @@ scikit-learn
 matplotlib
 fastcluster
 statsmodels==0.11.1
+flask-login
+oauthlib
+requests 
+pyopenssl
+mysql
