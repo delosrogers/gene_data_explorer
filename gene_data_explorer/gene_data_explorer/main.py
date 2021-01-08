@@ -14,7 +14,7 @@ from oauthlib.oauth2 import WebApplicationClient
 import requests
 import os
 import json
-
+from gene_data_explorer.models import Admin_form, Authorized_user_emails 
 from gene_data_explorer.user import User
 
 
@@ -90,14 +90,17 @@ def callback():
     else:
         print("User email not available or not verified by Google.", 400)
         return
-    user = User(id_=unique_id, username=users_name, email=users_email)
-    if not(user.get(unique_id)):
-        User.create(unique_id, users_name, users_email)
+    print(User.authorized_email(users_email), "authed email")
+    print(users_email)
+    if User.authorized_email(users_email):
+        user = User(id_=unique_id, username=users_name, email=users_email)
+        print(user)
+        if User.get(unique_id) is None:
+            user.create()
+        login_user(user)
+
     #if(users_email == 'mattiasdelosrios@berkeley.edu'):
     print('loging in')
-    print(user.id)
-    login_user(user)
-    print(user.is_authenticated)
     return redirect("/")
 
 
@@ -105,12 +108,25 @@ def callback():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("mine"))
+    return redirect("/")
 
 @app.route("/")                   # at the end point /
 def hello():
-    print(current_user.username)                      # call method hello
-    return render_template("index.html")         # which returns "hello world"
+    if current_user.is_authenticated:
+        print(current_user.username)
+    return render_template("index.html")
+
+
+@app.route("/admin", methods=['GET', 'POST'])
+@login_required
+def manage_users():
+    form = Admin_form()
+    if request.method == 'POST' and form.validate_on_submit():
+        new_email = Authorized_user_email(email=form.email)
+        db.session.add(new_email)
+        db.commit()
+        return render_template('admin.html', form=form, prev_added=form.email)
+    return render_template('admin.html', form=form)
 
 
 @app.route('/mine', methods=['GET', 'POST']) #allow both GET and POST requests
