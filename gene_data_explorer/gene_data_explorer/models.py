@@ -1,12 +1,10 @@
-import mysql.connector
-from mysql.connector import Error
 import pandas as pd
 import platform
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from gene_data_explorer import app, db
+from flask_wtf import FlaskForm
+from gene_data_explorer import db
 from copy import deepcopy
 from sqlalchemy import Column, Integer, String
+from wtforms import SubmitField, StringField, SelectField, TextAreaField, BooleanField, validators
 #from sqlalchemy.ext.automap impor
 # t automap_base
 
@@ -52,6 +50,14 @@ class tph1p_v_N2(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
  """
 
+class Authorized_user_emails(db.Model):
+    __tablename__ = 'authorized_user_emails'
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    __table_args__ = {'extend_existing': True} 
+
+db.create_all()
 
 def join_data(columns: list, tables: list, gene_list: list, additional_params="", return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:
     column_names=deepcopy(columns) #current column list will get converted to ORM objects and I need the strings to name df columns
@@ -94,6 +100,22 @@ def get_gene_info(gene):
     res = q.filter(genes.WormBaseID == gene).all()
     df = pd.DataFrame.from_records(res, columns=columns)
     return df
+
+
+class Admin_form(FlaskForm):
+    email_to_add = StringField('email to add',
+        [validators.DataRequired()])
+    submit = SubmitField('Submit')
+
+
+
+
+
+
+
+
+
+
 
 class geneModel:
     

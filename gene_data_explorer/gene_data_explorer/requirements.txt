@@ -16,3 +16,5 @@ oauthlib
 requests 
 pyopenssl
 mysql
+Flask-Bootstrap
+Flask-WTF

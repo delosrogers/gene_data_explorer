@@ -1,6 +1,8 @@
 from flask_login import UserMixin
 from gene_data_explorer import db
+from gene_data_explorer.models import Authorized_user_emails
 from decimal import *
+import itertools
 class User(UserMixin):
     def __init__(self, id_, username, email):
         self.id = id_
@@ -12,8 +14,8 @@ class User(UserMixin):
         print(user_id)
         users = db.Model.classes.users
         user = db.session.query(users.id, users.username, users.email).filter(users.id == Decimal(user_id)).first()
-        print(user)
-        if len(user)<3:
+        print(user, 'users.py')
+        if user is None:
             return None
         print('continued')
         user = User(
@@ -23,12 +25,24 @@ class User(UserMixin):
         )
         return user
     
-    @staticmethod
-    def create(id_, username, email):
-        user = db.Model.classes.users(id=id_, username=username, email=email)
+    def create(self):
+        print(creating)
+        user = db.Model.classes.users(id=self.id, username=self.username, email=self.email)
         db.session.add(user)
         db.session.commit()
 
     def get_id(self):
         return str(self.id)
 
+    @staticmethod
+    def authorized_email(email):
+        print('authorized_email')
+        auth_emails = db.session.query(Authorized_user_emails.email).all()
+        authorized= [item for t in auth_emails for item in t]
+        print(authorized, 'auth_emails')
+        if email in authorized:
+            authed = True
+        else:
+            authed = False
+        print('authed', authed)
+        return authed
