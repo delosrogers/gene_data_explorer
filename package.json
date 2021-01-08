@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "clustergrammer": "^1.19.5"
+    "clustergrammer": "^1.19.5",
+    "jquery": "^1.12.0",
+    "webpack": "^5.11.1"
   }
 }
