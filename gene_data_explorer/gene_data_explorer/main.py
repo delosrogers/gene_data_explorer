@@ -14,8 +14,7 @@ from oauthlib.oauth2 import WebApplicationClient
 import requests
 import os
 import json
-from gene_data_explorer.models import Admin_form, Authorized_user_emails 
-from gene_data_explorer.user import User
+from gene_data_explorer.models import Admin_form, Authorized_user_emails, User
 from flask_bootstrap import Bootstrap
 from werkzeug.urls import url_parse
 GOOGLE_DISCOVERY_URL = (
@@ -96,7 +95,7 @@ def callback():
     print(User.authorized_email(users_email), "authed email")
     print(users_email)
     if User.authorized_email(users_email):
-        user = User(id_=unique_id, username=users_name, email=users_email)
+        user = User(id=unique_id, username=users_name, email=users_email)
         print(user)
         if User.get(unique_id) is None:
             user.create()
