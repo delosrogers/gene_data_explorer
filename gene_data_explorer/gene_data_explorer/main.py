@@ -1,4 +1,4 @@
-from flask import redirect, request, url_for, render_template, request, make_response, g, send_from_directory
+from flask import redirect, request, url_for, render_template, request, make_response, g, send_from_directory, session
 import platform
 import gene_data_explorer.service as service
 from gene_data_explorer import app, db
@@ -16,8 +16,8 @@ import os
 import json
 from gene_data_explorer.models import Admin_form, Authorized_user_emails 
 from gene_data_explorer.user import User
-
-
+from flask_bootstrap import Bootstrap
+from werkzeug.urls import url_parse
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
@@ -29,6 +29,8 @@ app.secret_key = os.environ.get("SECRET_KEY")
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = "strong"
+bootstrap = Bootstrap(app)
+login_manager.login_view = 'login'
 
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
@@ -47,6 +49,7 @@ def load_user(user_id):
 
 @app.route("/login")
 def login():
+    session['login_redirect'] = request.args.get('next')
     # Find out what URL to hit for Google login
     google_provider_cfg = get_google_provider_cfg()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
@@ -98,10 +101,14 @@ def callback():
         if User.get(unique_id) is None:
             user.create()
         login_user(user)
-
+    next_page = session.get('login_redirect')
+    session.pop('login_rediriect', None)
+    print (next_page)
+    if not next_page or url_parse(next_page).netloc != '':
+        next_page = url_for('index')
     #if(users_email == 'mattiasdelosrios@berkeley.edu'):
     print('loging in')
-    return redirect("/")
+    return redirect(next_page)
 
 
 @app.route("/logout")
@@ -111,7 +118,7 @@ def logout():
     return redirect("/")
 
 @app.route("/")                   # at the end point /
-def hello():
+def index():
     if current_user.is_authenticated:
         print(current_user.username)
     return render_template("index.html")
@@ -122,10 +129,14 @@ def hello():
 def manage_users():
     form = Admin_form()
     if request.method == 'POST' and form.validate_on_submit():
-        new_email = Authorized_user_email(email=form.email)
-        db.session.add(new_email)
-        db.commit()
-        return render_template('admin.html', form=form, prev_added=form.email)
+        new_email = db.Model.classes.authorized_user_emails()
+        new_email.email = form.email_to_add.data
+        email_exists = db.session.query(db.Model.classes.authorized_user_emails).filter(db.Model.classes.authorized_user_emails.email == form.email_to_add.data).first()
+        if email_exists is None:
+            db.session.add(new_email)
+            print(new_email, email_exists)
+            db.session.commit()
+        return render_template('admin.html', form=form, prev_added=form.email_to_add)
     return render_template('admin.html', form=form)
 
 

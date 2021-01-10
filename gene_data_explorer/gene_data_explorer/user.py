@@ -26,7 +26,6 @@ class User(UserMixin):
         return user
     
     def create(self):
-        print(creating)
         user = db.Model.classes.users(id=self.id, username=self.username, email=self.email)
         db.session.add(user)
         db.session.commit()
