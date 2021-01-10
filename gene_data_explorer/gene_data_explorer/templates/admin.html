@@ -1,14 +1,40 @@
-# templates/registration.html
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+{% block styles %}
+{{super()}}
+  <link rel="stylesheet" href="/static/style.css">
+{% endblock %}
 {% block content %}
 <div class="container">
-  <h3>manage emails with access</h3>
+  <h3>email to add or remove:</h3>
   <hr>
     {{ wtf.quick_form(form) }}
   <hr>
-  <p>Open one account - All humans working for you.</p>
-  <p><a href="#">Sign in instead</a></p>
-  {{prev_added}}
-</div>
+  <h3>All users:</h3>
+  
+  <table>
+    <tr>
+        {% for col in column_names %}
+        <th> {{col}} </th>
+        {% endfor %}
+    </tr>
+    {% for row in row_data %}
+    <tr>
+        {% for col, row_ in zip(column_names, row) %}
+        {% if link_column|string() == col|string() %}
+        <td>
+            <a href="/gene_info?gene={{row_}}"> {{row_}} </a>
+        </td>
+        {% else %}
+        <td>{{row_}}</td>
+        {% endif %}
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    <!-- {{table}} -->
 {% endblock %}
+
+
+
+</table>
+</div>

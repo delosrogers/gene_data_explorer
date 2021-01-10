@@ -14,7 +14,7 @@ from oauthlib.oauth2 import WebApplicationClient
 import requests
 import os
 import json
-from gene_data_explorer.models import Admin_form, Authorized_user_emails, User
+from gene_data_explorer.models import Admin_email_management_form, Authorized_user_emails, User
 from flask_bootstrap import Bootstrap
 from werkzeug.urls import url_parse
 GOOGLE_DISCOVERY_URL = (
@@ -94,12 +94,17 @@ def callback():
         return
     print(User.authorized_email(users_email), "authed email")
     print(users_email)
-    if User.authorized_email(users_email):
-        user = User(id=unique_id, username=users_name, email=users_email)
+    user = User.get(unique_id)
+    if user.authed or UserManagement.is_email_authorized(users_email):
         print(user)
-        if User.get(unique_id) is None:
+        if user is None:
+            user = User(id=unique_id, email=users_email, username=users_name, user_type="user", authed=True)
             user.create()
-        login_user(user)
+    else:
+        if user is None:
+            user = User(id=unique_id, email=users_email, username=users_name, user_type="user", authed=False)
+            user.create()
+    login_user(user)
     next_page = session.get('login_redirect')
     session.pop('login_rediriect', None)
     print (next_page)
@@ -126,17 +131,15 @@ def index():
 @app.route("/admin", methods=['GET', 'POST'])
 @login_required
 def manage_users():
-    form = Admin_form()
+    form = Admin_email_management_form()
+    all_users = User.get_all_users()
     if request.method == 'POST' and form.validate_on_submit():
-        new_email = db.Model.classes.authorized_user_emails()
-        new_email.email = form.email_to_add.data
-        email_exists = db.session.query(db.Model.classes.authorized_user_emails).filter(db.Model.classes.authorized_user_emails.email == form.email_to_add.data).first()
-        if email_exists is None:
-            db.session.add(new_email)
-            print(new_email, email_exists)
-            db.session.commit()
-        return render_template('admin.html', form=form, prev_added=form.email_to_add)
-    return render_template('admin.html', form=form)
+        if form.add_or_remove == 'add': 
+            Authorized_user_emails.add_email(form.email.data)
+        elif form.add_or_remove == 'remove':
+            Authorized_user_emails.add_email(form.email.data)
+    return render_template('admin.html', form=form,
+            column_names=all_users.columns.values, row_data=list(all_users.values.tolist()), zip=zip)
 
 
 @app.route('/mine', methods=['GET', 'POST']) #allow both GET and POST requests

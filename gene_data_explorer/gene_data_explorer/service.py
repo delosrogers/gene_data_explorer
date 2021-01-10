@@ -4,6 +4,7 @@ from flask import make_response
 from gene_data_explorer.config import COLUMN_DICT, TABLE_DICT, GENE_TYPE_DICT
 from clustergrammer2  import Network
 import numpy as np
+from gene_data_explorer.models import Authorized_user_emails, User
 
 def parse_query(query):
     print(query)
@@ -121,3 +122,27 @@ def replace_empty_gene_name_with_wbid(row):
     if row['genes.GeneName'] == "":
          row["genes.GeneName"] = row["genes.WormBaseID"]
     return row
+
+class UserManagement:
+    #manages adding and removing/authorizing users
+    @staticmethod
+    def authorize_email(email):
+        Authorized_user_emails.add_email(email)
+        User.authorize_by_email(email)
+    @staticmethod
+    def deauthorize_email(email):
+        Authorized_user_emails.remove_email(email)
+        User.deauthorize_by_email(email)
+    
+    @staticmethod
+    def is_email_authorized(email):
+        print('authorized_email')
+        auth_emails = db.session.query(Authorized_user_emails.email).all()
+        authorized= [item for t in auth_emails for item in t]
+        print(authorized, 'auth_emails')
+        if email in authorized:
+            authed = True
+        else:
+            authed = False
+        print('authed', authed)
+        return authed
