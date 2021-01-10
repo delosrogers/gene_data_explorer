@@ -1,4 +1,7 @@
 credentials.txt
+#*#
+*.swo
+*.swp
 credentials.py
 src/credentials.txt
 .vscode/
