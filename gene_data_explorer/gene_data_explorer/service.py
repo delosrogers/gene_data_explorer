@@ -129,6 +129,8 @@ class UserManagement:
     def authorize_email(email):
         Authorized_user_emails.add_email(email)
         User.authorize_by_email(email)
+        print('authorizing{email} in UserManagement'.format(email=email))
+
     @staticmethod
     def deauthorize_email(email):
         Authorized_user_emails.remove_email(email)

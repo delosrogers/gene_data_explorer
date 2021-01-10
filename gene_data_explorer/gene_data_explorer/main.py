@@ -1,6 +1,7 @@
 from flask import redirect, request, url_for, render_template, request, make_response, g, send_from_directory, session
 import platform
 import gene_data_explorer.service as service
+from gene_data_explorer.service import UserManagement
 from gene_data_explorer import app, db
 from gene_data_explorer.credentials import *
 from flask_login import (
@@ -132,12 +133,12 @@ def index():
 @login_required
 def manage_users():
     form = Admin_email_management_form()
+    if form.validate_on_submit():
+        if form.add_or_remove.data == 'add': 
+            UserManagement.authorize_email(form.email.data)
+        elif form.add_or_remove.data == 'remove':
+            UserManagement.deauthorize_email(form.email.data)
     all_users = User.get_all_users()
-    if request.method == 'POST' and form.validate_on_submit():
-        if form.add_or_remove == 'add': 
-            Authorized_user_emails.add_email(form.email.data)
-        elif form.add_or_remove == 'remove':
-            Authorized_user_emails.add_email(form.email.data)
     return render_template('admin.html', form=form,
             column_names=all_users.columns.values, row_data=list(all_users.values.tolist()), zip=zip)
 

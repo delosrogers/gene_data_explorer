@@ -59,6 +59,7 @@ class Authorized_user_emails(db.Model):
     __table_args__ = {'extend_existing': True} 
     @staticmethod
     def add_email(email):
+        print('adding email')
         new_email = Authorized_user_emails(email=email) 
         email_exists = Authorized_user_emails.query.filter(email == email).first()
         if email_exists is None:
@@ -107,6 +108,8 @@ class User(db.Model):
     def authorize_by_email(email):
         user = User.query.filter_by(email=email).first()
         if user is not None:
+            print('authorizing')
+            print(user)
             user.authed = True
             db.session.commit()
 
