@@ -3,44 +3,45 @@ import platform
 from flask_wtf import FlaskForm
 from gene_data_explorer import db
 from copy import deepcopy
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String 
 from wtforms import SubmitField, StringField, SelectField, TextAreaField, BooleanField, validators
 #from sqlalchemy.ext.automap impor
+from flask_login import UserMixin
 # t automap_base
 
-
-""" class genes(db.Model):
-    __tablename__ = 'genes'
-
-class cco1_jmjd_RNAseq(db.Model):
-    __tablename__ = 'cco1_jmjd_RNAseq'
-
-class Ahringer_RNAi(db.Model):
-    __tablename__ = 'Ahringer_RNAi'
-
-class Vidal_RNAi(db.Model):
-    __tablename__ = 'Vidal_RNAi'
-
-class dat1p_tph1p_v_N2(db.Model):
-    __tablename__ = 'dat1p_tph1p_v_N2'
-
-class dat1p_v_N2(db.Model):
-    __tablename__ = 'dat1p_v_N2'
-
-class eps8_RNAi(db.Model):
-    __tablename__ = 'eps8_RNAi'
-
-class human_genes(db.Model):
-    __tablename__ = 'human_genes'
-
-class human_mito_stress(db.Model):
-    __tablename__ = 'human_mito_stress'
-
-class rab3p_v_N2(db.Model):
-    __tablename__ = 'rab3p_v_N2'
-
-class tph1p_v_N2(db.Model):
-    __tablename__ = 'tph1p_v_N2' """
+#
+#""" class genes(db.Model):
+#    __tablename__ = 'genes'
+#
+#class cco1_jmjd_RNAseq(db.Model):
+#    __tablename__ = 'cco1_jmjd_RNAseq'
+#
+#class Ahringer_RNAi(db.Model):
+#    __tablename__ = 'Ahringer_RNAi'
+#
+#class Vidal_RNAi(db.Model):
+#    __tablename__ = 'Vidal_RNAi'
+#
+#class dat1p_tph1p_v_N2(db.Model):
+#    __tablename__ = 'dat1p_tph1p_v_N2'
+#
+#class dat1p_v_N2(db.Model):
+#    __tablename__ = 'dat1p_v_N2'
+#
+#class eps8_RNAi(db.Model):
+#    __tablename__ = 'eps8_RNAi'
+#
+#class human_genes(db.Model):
+#    __tablename__ = 'human_genes'
+#
+#class human_mito_stress(db.Model):
+#    __tablename__ = 'human_mito_stress'
+#
+#class rab3p_v_N2(db.Model):
+#    __tablename__ = 'rab3p_v_N2'
+#
+#class tph1p_v_N2(db.Model):
+#    __tablename__ = 'tph1p_v_N2'
 
 """ class User(db.Model):
     __tablename__ = 'users'
@@ -57,6 +58,57 @@ class Authorized_user_emails(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     __table_args__ = {'extend_existing': True} 
 
+
+class User(db.Model):
+    __tablename__ = 'users'
+    __table_args__ = {'extend_existing': True} 
+    id = db.Column(db.String(45), primary_key=True)
+    username = db.Column(db.String(80), unique=False, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    user_type = db.Column(db.String(45), unique=False, nullable=False)
+    authed = db.Column(db.Boolean(), nullable=False)
+    
+    @staticmethod
+    def exists(user_id):
+        user = db.session.query(User).filter(User.id == user_id).first()
+        return user
+    @staticmethod
+    def get(user_id):
+        user = db.session.query(User).filter(User.id == user_id).first()
+        return user
+    
+    def get_id(self):
+        return str(self.id)
+    
+    def create(self):
+        db.session.add(self)
+
+    def is_authenticated(self):
+        return self.authed
+
+    def is_active(self):
+        #for now all authenticated accounts are active
+        return self.authed
+
+    @staticmethod
+    def authorized_email(email):
+        print('authorized_email')
+        auth_emails = db.session.query(Authorized_user_emails.email).all()
+        authorized= [item for t in auth_emails for item in t]
+        print(authorized, 'auth_emails')
+        if email in authorized:
+            authed = True
+        else:
+            authed = False
+        print('authed', authed)
+        return authed
+    
+    def __repr__(self):
+        return "<User(id = {id}, username = {username}, email = {email}, user_type = {user_type}".format(
+            id=self.id, username=self.username, email=self.email, user_type=self.user_type
+        )
+
+db.Model.prepare(db.engine, reflect=True)
 db.create_all()
 
 def join_data(columns: list, tables: list, gene_list: list, additional_params="", return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:
