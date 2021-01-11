@@ -18,6 +18,7 @@ import json
 from gene_data_explorer.models import Admin_email_management_form, Authorized_user_emails, User
 from flask_bootstrap import Bootstrap
 from werkzeug.urls import url_parse
+from functools import wraps
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
@@ -46,6 +47,18 @@ def get_google_provider_cfg():
 def load_user(user_id):
     return User.get(user_id)
 
+
+#def login_required(role="ANY"):
+#    def wrapper(fn):
+#        @wraps(fn)
+#        def decorated_view(*args, **kwargs):
+#            if not current_user.is_authenticated():
+#                return login_manager.unauthorized()
+#            if ((current_user.user_type != role) and (role != "ANY")):
+#                return login_manager.unauthorized()
+#            return fn(*args, **kwargs)
+#        return decorated_view
+#    return wrapper
 
 @app.route("/login")
 def login():
@@ -93,8 +106,6 @@ def callback():
     else:
         print("User email not available or not verified by Google.", 400)
         return
-    print(User.authorized_email(users_email), "authed email")
-    print(users_email)
     user = User.get(unique_id)
     if user.authed or UserManagement.is_email_authorized(users_email):
         print(user)
@@ -108,11 +119,8 @@ def callback():
     login_user(user)
     next_page = session.get('login_redirect')
     session.pop('login_rediriect', None)
-    print (next_page)
     if not next_page or url_parse(next_page).netloc != '':
         next_page = url_for('index')
-    #if(users_email == 'mattiasdelosrios@berkeley.edu'):
-    print('loging in')
     return redirect(next_page)
 
 
@@ -130,7 +138,7 @@ def index():
 
 
 @app.route("/admin", methods=['GET', 'POST'])
-@login_required
+@login_required(role="admin")
 def manage_users():
     form = Admin_email_management_form()
     if form.validate_on_submit():

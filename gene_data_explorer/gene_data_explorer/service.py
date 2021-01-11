@@ -5,6 +5,7 @@ from gene_data_explorer.config import COLUMN_DICT, TABLE_DICT, GENE_TYPE_DICT
 from clustergrammer2  import Network
 import numpy as np
 from gene_data_explorer.models import Authorized_user_emails, User
+from gene_data_explorer import db
 
 def parse_query(query):
     print(query)
@@ -139,8 +140,8 @@ class UserManagement:
     @staticmethod
     def is_email_authorized(email):
         print('authorized_email')
-        auth_emails = db.session.query(Authorized_user_emails.email).all()
-        authorized= [item for t in auth_emails for item in t]
+        authed_emails = db.session.query(Authorized_user_emails.email).all()
+        authorized= [item for t in authed_emails for item in t]
         print(authorized, 'auth_emails')
         if email in authorized:
             authed = True
