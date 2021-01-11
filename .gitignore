@@ -13,3 +13,6 @@ gene_data_explorer/gene_data_explorer/static/clustergrammer/
 node_modules/
 c_elegans.PRJNA13758.WS279.geneOtherIDs.txt
 clustergrammer
+*.pyc
+__pycache__/
+.idea/
