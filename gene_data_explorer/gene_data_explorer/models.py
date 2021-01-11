@@ -61,7 +61,8 @@ class Authorized_user_emails(db.Model):
     def add_email(email):
         print('adding email')
         new_email = Authorized_user_emails(email=email) 
-        email_exists = Authorized_user_emails.query.filter(email == email).first()
+        email_exists = Authorized_user_emails.query.filter_by(email=email).first()
+        print('authorized_user_emails add email', new_email, email_exists)
         if email_exists is None:
             db.session.add(new_email)
             print(new_email, email_exists)

@@ -138,7 +138,6 @@ def index():
 
 
 @app.route("/admin", methods=['GET', 'POST'])
-@login_required(role="admin")
 def manage_users():
     form = Admin_email_management_form()
     if form.validate_on_submit():
