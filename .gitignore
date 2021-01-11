@@ -1,4 +1,7 @@
 credentials.txt
+#*#
+*.swo
+*.swp
 credentials.py
 src/credentials.txt
 .vscode/
@@ -9,3 +12,4 @@ gene_data.12-7-2020.sql
 gene_data_explorer/gene_data_explorer/static/clustergrammer/
 node_modules/
 c_elegans.PRJNA13758.WS279.geneOtherIDs.txt
+clustergrammer

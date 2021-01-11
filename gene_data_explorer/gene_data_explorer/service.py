@@ -3,6 +3,9 @@ from flask import render_template, Markup
 from flask import make_response
 from gene_data_explorer.config import COLUMN_DICT, TABLE_DICT, GENE_TYPE_DICT
 from clustergrammer2  import Network
+import numpy as np
+from gene_data_explorer.models import Authorized_user_emails, User
+from gene_data_explorer import db
 
 def parse_query(query):
     print(query)
@@ -94,9 +97,12 @@ def db_form(request, file):
             resp.headers["Content-Type"] = "text/csv"
             return resp
         elif query['download_type'] == "clustergrammer":
+            #make sure there are no missing index labels
+            result = result.apply(replace_empty_gene_name_with_wbid, axis=1)
             result.set_index('genes.GeneName', inplace=True)
             result.drop("genes.WormBaseID", inplace=True, axis=1)
             result.dropna(inplace=True)
+            result = result[result.applymap(np.isreal).all(1)]
             net = Network()
             net.load_df(result)
             net.cluster()
@@ -110,3 +116,36 @@ def db_form(request, file):
 def get_gene_info(gene):
     result = models.get_gene_info(gene)
     return render_template('table.html', column_names=result.columns.values, row_data=list(result.values.tolist()), link_column="", zip=zip)
+
+
+#used for formating clustergrammer input
+def replace_empty_gene_name_with_wbid(row):
+    if row['genes.GeneName'] == "":
+         row["genes.GeneName"] = row["genes.WormBaseID"]
+    return row
+
+class UserManagement:
+    #manages adding and removing/authorizing users
+    @staticmethod
+    def authorize_email(email):
+        Authorized_user_emails.add_email(email)
+        User.authorize_by_email(email)
+        print('authorizing{email} in UserManagement'.format(email=email))
+
+    @staticmethod
+    def deauthorize_email(email):
+        Authorized_user_emails.remove_email(email)
+        User.deauthorize_by_email(email)
+    
+    @staticmethod
+    def is_email_authorized(email):
+        print('authorized_email')
+        authed_emails = db.session.query(Authorized_user_emails.email).all()
+        authorized= [item for t in authed_emails for item in t]
+        print(authorized, 'auth_emails')
+        if email in authorized:
+            authed = True
+        else:
+            authed = False
+        print('authed', authed)
+        return authed
