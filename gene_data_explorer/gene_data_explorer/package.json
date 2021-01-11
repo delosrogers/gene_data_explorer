@@ -1,0 +1,5 @@
+{
+    "dependencies": {
+        "clustergrammer": "git+https://github.com/delosrogers/clustergrammer.git"
+    }
+}
