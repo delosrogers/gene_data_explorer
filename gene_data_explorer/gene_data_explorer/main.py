@@ -55,15 +55,17 @@ def authentication_required(func):
             return func()
         else:
             return "not authenticated"
+    wrapper.__name__ = func.__name__
     return wrapper
 
 def admin_required(func):
-    def wraps():
+    def wrapper():
         if current_user.is_authenticated() and current_user.user_type == "admin":
             return func()
         else:
             return "not authenticated"
-    return wraps
+    wrapper.__name__ = func.__name__
+    return wrapper
 
 
 # def login_required(role="ANY"):
