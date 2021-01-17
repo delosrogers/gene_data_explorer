@@ -49,18 +49,34 @@ def get_google_provider_cfg():
 def load_user(user_id):
     return User.get(user_id)
 
+def authentication_required(func):
+    def wrapper():
+        if current_user.is_authenticated():
+            return func()
+        else:
+            return "not authenticated"
+    return wrapper
 
-#def login_required(role="ANY"):
-#    def wrapper(fn):
-#        @wraps(fn)
-#        def decorated_view(*args, **kwargs):
-#            if not current_user.is_authenticated():
-#                return login_manager.unauthorized()
-#            if ((current_user.user_type != role) and (role != "ANY")):
-#                return login_manager.unauthorized()
-#            return fn(*args, **kwargs)
-#        return decorated_view
-#    return wrapper
+def admin_required(func):
+    def wraps():
+        if current_user.is_authenticated() and current_user.user_type == "admin":
+            return func()
+        else:
+            return "not authenticated"
+    return wraps
+
+
+# def login_required(role="ANY"):
+#     def wrapper(fn):
+#         @wraps(fn)
+#         def decorated_view(*args, **kwargs):
+#             if not current_user.is_authenticated():
+#                 return login_manager.unauthorized()
+#             if ((current_user.user_type != role) and (role != "ANY")):
+#                 return login_manager.unauthorized()
+#             return fn(*args, **kwargs)
+#         return decorated_view
+# #    return wrapper
 
 @app.route("/login")
 def login():
@@ -109,12 +125,14 @@ def callback():
         print("User email not available or not verified by Google.", 400)
         return
     user = User.get(unique_id)
-    if user.authed or UserManagement.is_email_authorized(users_email):
+    print(user, "user in callback")
+    if UserManagement.is_email_authorized(users_email):
         print(user)
         if user is None:
             user = User(id=unique_id, email=users_email, username=users_name, user_type="user", authed=True)
             user.create()
     else:
+        print("made it to else in callback")
         if user is None:
             user = User(id=unique_id, email=users_email, username=users_name, user_type="user", authed=False)
             user.create()
@@ -140,6 +158,8 @@ def index():
 
 
 @app.route("/admin", methods=['GET', 'POST'])
+@login_required
+@admin_required
 def manage_users():
     form = Admin_email_management_form()
     if form.validate_on_submit():
@@ -154,8 +174,9 @@ def manage_users():
 
 @app.route('/mine', methods=['GET', 'POST']) #allow both GET and POST requests
 @login_required
+@authentication_required
 def mine():
-    return service.db_form(request, "mine.html")
+        return service.db_form(request, "mine.html")
 
 
 @app.route('/rnai', methods=['GET', 'POST'])

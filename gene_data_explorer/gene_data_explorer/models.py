@@ -97,6 +97,7 @@ class User(db.Model):
     
     def create(self):
         db.session.add(self)
+        db.session.commit()
 
     def is_authenticated(self):
         return self.authed
