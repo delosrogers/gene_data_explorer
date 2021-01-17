@@ -15,7 +15,7 @@ def parse_query(query):
     if not(additional_params):
         additional_params=""
     if query.get("RNAi"):
-        columns = ["genes.WormBaseID", "genes.GeneName"]
+        columns = ["genes.WormBaseID", "genes.GeneName", "genes.sequence"]
         if "Vidal_RNAi" in tables:
             for i in "vidal_plate vidal_row vidal_col".split(" "):
                 columns.append(TABLE_DICT['Vidal_RNAi'] + "." + COLUMN_DICT[i])
@@ -41,7 +41,7 @@ def _make_table_and_col_lists(query, tables, additional_params):
         raise Exception("Not allowed to use semicolons")
     q_list = list(query.values())
     print(q_list)
-    columns = ['genes.WormBaseID', 'genes.GeneName']
+    columns = ['genes.WormBaseID', 'genes.GeneName', 'genes.sequence']
     for i in tables:
         for j in requested_columns:
             columns.append(TABLE_DICT[i] + "." + COLUMN_DICT[j])
@@ -88,6 +88,9 @@ def db_form(request, file):
         query = request.form
 
         result, sql_statement = parse_query(query)
+        result = result.apply(replace_empty_gene_name_with_wbid_or_sequence, axis=1)
+        if not(query.get('sequence_names') == "True"):
+            result = result.drop('genes.sequence', axis=1)
         if query['download_type']=="tsv":
             resp = make_response(result.to_csv(sep="\t"))
             resp.headers["Content-Disposition"] = "attachment; filename=result.txt"
@@ -95,7 +98,6 @@ def db_form(request, file):
             return resp
         elif query['download_type'] == "clustergrammer":
             #make sure there are no missing index labels
-            result = result.apply(replace_empty_gene_name_with_wbid, axis=1)
             result.set_index('genes.GeneName', inplace=True)
             result.drop("genes.WormBaseID", inplace=True, axis=1)
             result.dropna(inplace=True)
@@ -116,9 +118,11 @@ def get_gene_info(gene):
 
 
 #used for formating clustergrammer input
-def replace_empty_gene_name_with_wbid(row):
-    if row['genes.GeneName'] == "":
-         row["genes.GeneName"] = row["genes.WormBaseID"]
+def replace_empty_gene_name_with_wbid_or_sequence(row):
+    if row['genes.GeneName'] == "" and row['genes.sequence'] != "":
+        row["genes.GeneName"] = row["genes.sequence"]
+    elif row['genes.sequence'] == "":
+        row["genes.GeneName"] = row["genes.WormBaseID"]
     return row
 
 class UserManagement:
