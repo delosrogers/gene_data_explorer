@@ -196,7 +196,12 @@ class Admin_email_management_form(FlaskForm):
 
 def get_db_info() -> pd.DataFrame:
     """ retrieves a dataframe of all tables and columns in the database """
-    columns = "TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | COLUMN_NAME | ORDINAL_POSITION | COLUMN_DEFAULT | IS_NULLABLE | DATA_TYPE | CHARACTER_MAXIMUM_LENGTH | CHARACTER_OCTET_LENGTH | NUMERIC_PRECISION | NUMERIC_SCALE | DATETIME_PRECISION | CHARACTER_SET_NAME | COLLATION_NAME | COLUMN_TYPE  | COLUMN_KEY | EXTRA | PRIVILEGES | COLUMN_COMMENT | GENERATION_EXPRESSION | SRS_ID".split("|")
+    columns = """TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | COLUMN_NAME |
+         ORDINAL_POSITION | COLUMN_DEFAULT | IS_NULLABLE | DATA_TYPE |
+         CHARACTER_MAXIMUM_LENGTH | CHARACTER_OCTET_LENGTH | NUMERIC_PRECISION |
+         NUMERIC_SCALE | DATETIME_PRECISION | CHARACTER_SET_NAME | COLLATION_NAME |
+         COLUMN_TYPE  | COLUMN_KEY | EXTRA | PRIVILEGES | COLUMN_COMMENT |
+         GENERATION_EXPRESSION | SRS_ID""".split("|")
     df = pd.read_sql("SELECT * FROM information_schema.columns WHERE table_schema = 'gene_data';",
         db.engine)
     df.columns = columns
