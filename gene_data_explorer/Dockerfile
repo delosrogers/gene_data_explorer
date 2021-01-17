@@ -5,7 +5,10 @@ RUN pip install --upgrade pip
 RUN pip install -U -r requirements.txt
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install -y python-mysqldb default-mysql-client
+RUN apt-get install -y python-mysqldb default-mysql-client npm
+WORKDIR /app/gene_data_explorer
+RUN npm install .
+WORKDIR /app
 ENV RUNNING_IN_DOCKER=TRUE
 COPY . /app
 EXPOSE 5000

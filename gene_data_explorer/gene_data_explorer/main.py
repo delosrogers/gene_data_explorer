@@ -19,6 +19,8 @@ from gene_data_explorer.models import Admin_email_management_form, Authorized_us
 from flask_bootstrap import Bootstrap
 from werkzeug.urls import url_parse
 from functools import wraps
+import secrets
+
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
@@ -26,7 +28,7 @@ GOOGLE_DISCOVERY_URL = (
 app.config['TESTING']=False
 
 
-app.secret_key = os.environ.get("SECRET_KEY")
+app.secret_key = secrets.token_bytes(32)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = "strong"

@@ -10,7 +10,7 @@ function resize_container(args){
 
 window.onload = function(){
 
-    console.log(document.getElementById("viz_json").innerText);
+   
 
     let network_data = JSON.parse(document.getElementById("viz_json").innerText);
     let args = {
