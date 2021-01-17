@@ -190,11 +190,15 @@ def serve_info():
 
 
 @app.route('/database_info')
+@login_required
+@authentication_required
 def serve_db_info():
     return service.get_db_info().to_html()
 
 
 @app.route('/gene_info')
+@login_required
+@authentication_required
 def gene_info():
     gene = request.args.get("gene")
     return service.get_gene_info(gene)
@@ -206,21 +210,6 @@ def serve_libraries(filename):
         app.root_path + '/node_modules/',
         filename, conditional=True
         )
-
-
-# @app.route('/sql', methods=['GET', 'POST'])
-# def custom_sql():
-#     if request.method == 'POST':
-#         query = request.form
-#         result, sql_statement = service.parse_custom_query(query)
-#         resp = make_response(result.to_csv(sep="\t"))
-#         resp.headers["Content-Disposition"] = "attachment; filename=result.txt"
-#         resp.headers["Content-Type"] = "text/csv"
-#         if query['download_type']=="tsv":
-#             return resp
-#         else:
-#             return '''{}<br> the SQL statement used was:<br>{}'''.format(result.to_html(), sql_statement)
-#     return render_template("sql.html") 
 
 
 if __name__ == "__main__":        # on running python app.py

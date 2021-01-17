@@ -79,10 +79,7 @@ def _make_table_and_col_lists(query, tables, additional_params):
     return columns, tables
 
 def get_db_info():
-    db = models.geneModel()
-    res = db.get_info()
-    db.cursor.close()
-    db.conn.close()
+    res = models.get_db_info()
     return res
 
 def db_form(request, file):
