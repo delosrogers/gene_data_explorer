@@ -104,7 +104,8 @@ def db_form(request, file):
             result = result[result.applymap(np.isreal).all(1)]
             net = Network()
             net.load_df(result)
-            net.cluster()
+            net.swap_nan_for_zero()
+            net.cluster(dist_type='euclidean')
             viz = net.export_net_json()
             return render_template('clustergrammer.html', viz=viz)
         else:
