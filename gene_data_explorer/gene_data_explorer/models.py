@@ -5,42 +5,42 @@ from gene_data_explorer import db
 from copy import deepcopy
 from sqlalchemy import Column, Integer, String
 from wtforms import SubmitField, StringField, SelectField, TextAreaField, BooleanField, validators
-#from sqlalchemy.ext.automap impor
+# from sqlalchemy.ext.automap impor
 from flask_login import UserMixin
 # t automap_base
 
 #
-#""" class genes(db.Model):
+# """ class genes(db.Model):
 #    __tablename__ = 'genes'
 #
-#class cco1_jmjd_RNAseq(db.Model):
+# class cco1_jmjd_RNAseq(db.Model):
 #    __tablename__ = 'cco1_jmjd_RNAseq'
 #
-#class Ahringer_RNAi(db.Model):
+# class Ahringer_RNAi(db.Model):
 #    __tablename__ = 'Ahringer_RNAi'
 #
-#class Vidal_RNAi(db.Model):
+# class Vidal_RNAi(db.Model):
 #    __tablename__ = 'Vidal_RNAi'
 #
-#class dat1p_tph1p_v_N2(db.Model):
+# class dat1p_tph1p_v_N2(db.Model):
 #    __tablename__ = 'dat1p_tph1p_v_N2'
 #
-#class dat1p_v_N2(db.Model):
+# class dat1p_v_N2(db.Model):
 #    __tablename__ = 'dat1p_v_N2'
 #
-#class eps8_RNAi(db.Model):
+# class eps8_RNAi(db.Model):
 #    __tablename__ = 'eps8_RNAi'
 #
-#class human_genes(db.Model):
+# class human_genes(db.Model):
 #    __tablename__ = 'human_genes'
 #
-#class human_mito_stress(db.Model):
+# class human_mito_stress(db.Model):
 #    __tablename__ = 'human_mito_stress'
 #
-#class rab3p_v_N2(db.Model):
+# class rab3p_v_N2(db.Model):
 #    __tablename__ = 'rab3p_v_N2'
 #
-#class tph1p_v_N2(db.Model):
+# class tph1p_v_N2(db.Model):
 #    __tablename__ = 'tph1p_v_N2'
 
 """ class User(db.Model):
@@ -51,38 +51,43 @@ from flask_login import UserMixin
     email = db.Column(db.String(120), unique=True, nullable=False)
  """
 
+
 class Authorized_user_emails(db.Model):
     __tablename__ = 'authorized_user_emails'
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    __table_args__ = {'extend_existing': True} 
+    __table_args__ = {'extend_existing': True}
+
     @staticmethod
     def add_email(email):
         print('adding email')
-        new_email = Authorized_user_emails(email=email) 
-        email_exists = Authorized_user_emails.query.filter_by(email=email).first()
+        new_email = Authorized_user_emails(email=email)
+        email_exists = Authorized_user_emails.query.filter_by(
+            email=email).first()
         print('authorized_user_emails add email', new_email, email_exists)
         if email_exists is None:
             db.session.add(new_email)
             print(new_email, email_exists)
             db.session.commit()
-        
+
     @staticmethod
     def remove_email(email):
-        email_db_entry = Authorized_user_emails.query.filter(email == email).first()
+        email_db_entry = Authorized_user_emails.query.filter(
+            email == email).first()
         if email_db_entry is not None:
             db.session.delete(email_db_entry)
 
+
 class User(db.Model):
     __tablename__ = 'users'
-    __table_args__ = {'extend_existing': True} 
+    __table_args__ = {'extend_existing': True}
     id = db.Column(db.String(45), primary_key=True)
     username = db.Column(db.String(80), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     user_type = db.Column(db.String(45), unique=False, nullable=False)
     authed = db.Column(db.Boolean(), nullable=False)
-    
+
 #    @staticmethod
 #    def exists(user_id):
 #        user = db.session.query(User).filter(User.id == user_id).first()
@@ -91,10 +96,10 @@ class User(db.Model):
     def get(user_id):
         user = db.session.query(User).filter(User.id == user_id).first()
         return user
-    
+
     def get_id(self):
         return str(self.id)
-    
+
     def create(self):
         db.session.add(self)
         db.session.commit()
@@ -103,7 +108,7 @@ class User(db.Model):
         return self.authed
 
     def is_active(self):
-        #for now all authenticated accounts are active
+        # for now all authenticated accounts are active
         return self.authed
 
     @staticmethod
@@ -119,7 +124,7 @@ class User(db.Model):
     def deauthorize_by_email(email):
         user = User.query.filter_by(email=email).first()
         if user is not None:
-            user.authed=False
+            user.authed = False
             db.session.commit()
 
     @staticmethod
@@ -129,18 +134,21 @@ class User(db.Model):
         df = pd.read_sql(users.statement, db.engine)
         print(df)
         return df
-    
+
     def __repr__(self):
         return "<User(id = {id}, username = {username}, email = {email}, user_type = {user_type}".format(
             id=self.id, username=self.username, email=self.email, user_type=self.user_type
         )
 
+
 db.Model.prepare(db.engine, reflect=True)
 db.create_all()
 
+
 def join_data(columns: list, tables: list, gene_list: list, additional_params="", return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:
     "take a list of columns tables which they are in and a gene list and make a sql query using sqlalchemy and return a dataframe of the results"
-    column_names=deepcopy(columns) #current column list will get converted to ORM objects and I need the strings to name df columns
+    # current column list will get converted to ORM objects and I need the strings to name df columns
+    column_names = deepcopy(columns)
     for i in range(len(columns)):
         # takes columns which are in table.colname format split them by the dot and then use
         # getattr to turn it into a object.
@@ -162,13 +170,14 @@ def join_data(columns: list, tables: list, gene_list: list, additional_params=""
         for join_args in tables:
             q = q.join(*join_args)
 
-    #turn gene type strings into ORM objects that relate to db columns
-    translate_genes = {'WormBaseID': genes.WormBaseID, 'GeneName': genes.GeneName, 'sequence': genes.sequence}
+    # turn gene type strings into ORM objects that relate to db columns
+    translate_genes = {'WormBaseID': genes.WormBaseID,
+                       'GeneName': genes.GeneName, 'sequence': genes.sequence}
     gene_type = translate_genes[gene_type]
     gene_tuple = tuple(gene_list)
     q = q.filter(gene_type.in_(gene_tuple)).order_by(genes.WormBaseID.asc())
     df = pd.read_sql(q.statement, db.session.bind)
-    df.columns=column_names
+    df.columns = column_names
     print(df)
     return df, ""
 
@@ -203,12 +212,6 @@ def get_db_info() -> pd.DataFrame:
          COLUMN_TYPE  | COLUMN_KEY | EXTRA | PRIVILEGES | COLUMN_COMMENT |
          GENERATION_EXPRESSION | SRS_ID""".split("|")
     df = pd.read_sql("SELECT * FROM information_schema.columns WHERE table_schema = 'gene_data';",
-        db.engine)
+                     db.engine)
     df.columns = columns
     return df
-
-
-
-
-
-

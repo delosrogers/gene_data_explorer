@@ -5,7 +5,7 @@ from gene_data_explorer.service import UserManagement
 from gene_data_explorer import app, db
 from gene_data_explorer.credentials import *
 from flask_login import (
-     LoginManager,
+    LoginManager,
     current_user,
     login_required,
     login_user,
@@ -25,7 +25,7 @@ GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
 
-app.config['TESTING']=False
+app.config['TESTING'] = False
 
 
 app.secret_key = secrets.token_bytes(32)
@@ -49,6 +49,7 @@ def get_google_provider_cfg():
 def load_user(user_id):
     return User.get(user_id)
 
+
 def authentication_required(func):
     def wrapper():
         if current_user.is_authenticated():
@@ -57,6 +58,7 @@ def authentication_required(func):
             return "not authenticated"
     wrapper.__name__ = func.__name__
     return wrapper
+
 
 def admin_required(func):
     def wrapper():
@@ -131,12 +133,14 @@ def callback():
     if UserManagement.is_email_authorized(users_email):
         print(user)
         if user is None:
-            user = User(id=unique_id, email=users_email, username=users_name, user_type="user", authed=True)
+            user = User(id=unique_id, email=users_email,
+                        username=users_name, user_type="user", authed=True)
             user.create()
     else:
         print("made it to else in callback")
         if user is None:
-            user = User(id=unique_id, email=users_email, username=users_name, user_type="user", authed=False)
+            user = User(id=unique_id, email=users_email,
+                        username=users_name, user_type="user", authed=False)
             user.create()
     login_user(user)
     next_page = session.get('login_redirect')
@@ -152,6 +156,7 @@ def logout():
     logout_user()
     return redirect("/")
 
+
 @app.route("/")                   # at the end point /
 def index():
     if current_user.is_authenticated:
@@ -165,20 +170,21 @@ def index():
 def manage_users():
     form = Admin_email_management_form()
     if form.validate_on_submit():
-        if form.add_or_remove.data == 'add': 
+        if form.add_or_remove.data == 'add':
             UserManagement.authorize_email(form.email.data)
         elif form.add_or_remove.data == 'remove':
             UserManagement.deauthorize_email(form.email.data)
     all_users = User.get_all_users()
     return render_template('admin.html', form=form,
-            column_names=all_users.columns.values, row_data=list(all_users.values.tolist()), zip=zip)
+                           column_names=all_users.columns.values, row_data=list(all_users.values.tolist()), zip=zip)
 
 
-@app.route('/mine', methods=['GET', 'POST']) #allow both GET and POST requests
+# allow both GET and POST requests
+@app.route('/mine', methods=['GET', 'POST'])
 @login_required
 @authentication_required
 def mine():
-        return service.db_form(request, "mine.html")
+    return service.db_form(request, "mine.html")
 
 
 @app.route('/rnai', methods=['GET', 'POST'])
@@ -211,7 +217,7 @@ def serve_libraries(filename):
     return send_from_directory(
         app.root_path + '/node_modules/',
         filename, conditional=True
-        )
+    )
 
 
 if __name__ == "__main__":        # on running python app.py
