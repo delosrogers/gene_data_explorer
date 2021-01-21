@@ -3,7 +3,7 @@ import platform
 from flask_wtf import FlaskForm
 from gene_data_explorer import db
 from copy import deepcopy
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, or_, and_
 from wtforms import SubmitField, StringField, SelectField, TextAreaField, BooleanField, validators
 # from sqlalchemy.ext.automap impor
 from flask_login import UserMixin
@@ -175,7 +175,7 @@ def join_data(columns: list, tables: list, gene_list: list, additional_params=""
                        'GeneName': genes.GeneName, 'sequence': genes.sequence}
     gene_type = translate_genes[gene_type]
     gene_tuple = tuple(gene_list)
-    q = q.filter(gene_type.in_(gene_tuple)).order_by(genes.WormBaseID.asc())
+    q = q.filter(gene_type.in_(gene_tuple)).filter(genes.sequence != "").order_by(genes.WormBaseID.asc())
     df = pd.read_sql(q.statement, db.session.bind)
     df.columns = column_names
     print(df)

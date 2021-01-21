@@ -6,9 +6,14 @@ from clustergrammer2 import Network
 import numpy as np
 from gene_data_explorer.models import Authorized_user_emails, User
 from gene_data_explorer import db
+from werkzeug.datastructures import ImmutableMultiDict
+import pandas as pd
 
 
-def parse_query(query):
+def parse_query(query: ImmutableMultiDict):
+    """Takes a query in the form of an immutable multidict and turns it into
+    a list of string tables and columns which are passed to the models join_data()
+    function where they are parsed into ORM objects and a dataframe is returned"""
     print(query)
     tables = query.getlist('dataset')
     return_missing = query.get('return_missing')
@@ -24,6 +29,8 @@ def parse_query(query):
             for i in "ahringer_plate ahringer_well".split(" "):
                 columns.append(
                     TABLE_DICT['Ahringer_RNAi'] + "." + COLUMN_DICT[i])
+
+    # This is a RNAseq data query not RNAi so process using the make_table_and_col_lists() fuction
     else:
         columns, tables = _make_table_and_col_lists(
             query, tables, additional_params)
@@ -38,10 +45,13 @@ def parse_query(query):
     return df, sql_statement
 
 
-def _make_table_and_col_lists(query, tables, additional_params):
+def _make_table_and_col_lists(query: ImmutableMultiDict, tables: list, additional_params: list):
+    """ builds the table and column lists based off the query and deseq tables that have been asked for
+    by iterating through all the types of datasets and translating to the real column names """
     larryTables = query.getlist('larryDataset')
     cco1_jmjd_tables = query.getlist('cco1_jmjd_Dataset')
     requested_columns = query.getlist('column')
+    beccaTaylor_tables = query.getlist('Becca_taylor_dataset')
     if len(additional_params.split(";")) > 1:
         raise Exception("Not allowed to use semicolons")
     q_list = list(query.values())
@@ -60,6 +70,17 @@ def _make_table_and_col_lists(query, tables, additional_params):
             elif(COLUMN_DICT[j] == 'padj'):
                 columns.append(i + "." + COLUMN_DICT["Larry_Padj"])
     tables += larryTables
+
+    # Translates checkbox data for Becca Taylor's neuron specific RNAseq
+    if len(beccaTaylor_tables) > 0:
+        beccaTaylorTableName = "Rebecca_Taylor_neuronal_RNAseq_xbp-1"
+        for i in requested_columns:
+            if (COLUMN_DICT[i] == 'log2FoldChange'):
+                columns.append(beccaTaylorTableName + "." +
+                               COLUMN_DICT["log2FoldChange"])
+            elif (COLUMN_DICT[i] == "padj"):
+                columns.append(beccaTaylorTableName + "." + COLUMN_DICT["FDR"])
+        tables.append(beccaTaylorTableName)
     # translates the checkbox data for cco1 and jmjd into columns for the SQL join
     cco1_translation_dict = {
         'log2FoldChange': 'Log2FC',
@@ -84,13 +105,14 @@ def _make_table_and_col_lists(query, tables, additional_params):
     return columns, tables
 
 
-def get_db_info():
+def get_db_info() -> pd.DataFrame:
+    """ retrieves a dataframe of all tables and columns in the database """
     res = models.get_db_info()
     return res
 
 
 def db_form(request, file):
-    # used to make and parse post requests from the forms used to query RNAseq and RNAi data
+    """ used to make and parse post requests from the forms used to query RNAseq and RNAi data """
     if request.method == 'POST':  # this block is only entered when the form is submitted
         query = request.form
 
@@ -123,12 +145,14 @@ def db_form(request, file):
 
 
 def get_gene_info(gene):
+    """ will return gene annotations when those are added to db """
     result = models.get_gene_info(gene)
     return render_template('table.html', column_names=result.columns.values, row_data=list(result.values.tolist()), link_column="", zip=zip)
 
 
 # used for formating clustergrammer input
 def replace_empty_gene_name_with_wbid_or_sequence(row):
+    """ used to make sure there is always a gene name """
     if row['genes.GeneName'] == "" and row['genes.sequence'] != "":
         row["genes.GeneName"] = row["genes.sequence"]
     elif row['genes.sequence'] == "":
@@ -137,7 +161,7 @@ def replace_empty_gene_name_with_wbid_or_sequence(row):
 
 
 class UserManagement:
-    # manages adding and removing/authorizing users
+    """ manages adding and removing/authorizing users """
     @staticmethod
     def authorize_email(email):
         Authorized_user_emails.add_email(email)

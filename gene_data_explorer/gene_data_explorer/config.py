@@ -12,7 +12,8 @@ COLUMN_DICT = {
     'vidal_row':'ceRNAi_Row',
     'vidal_col':'ceRNAi_Col',
     'ahringer_plate':'Plate',
-    'ahringer_well':'Well'
+    'ahringer_well':'Well' ,
+    'FDR' : 'FDR'
 }
 
 TABLE_DICT = {
