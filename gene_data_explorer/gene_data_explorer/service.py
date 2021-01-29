@@ -10,44 +10,47 @@ from werkzeug.datastructures import ImmutableMultiDict
 import pandas as pd
 
 
-def parse_query(query: ImmutableMultiDict):
-    """Takes a query in the form of an immutable multidict and turns it into
-    a list of string tables and columns which are passed to the models join_data()
-    function where they are parsed into ORM objects and a dataframe is returned"""
-    print(query)
+# def parse_query(query: ImmutableMultiDict):
+#     """Takes a query in the form of an immutable multidict and turns it into
+#     a list of string tables and columns which are passed to the models join_data()
+#     function where they are parsed into ORM objects and a dataframe is returned"""
+#     print(query)
+#     tables = query.getlist('dataset')
+#     return_missing = query.get('return_missing')
+#     additional_params = query.get('additional_params')
+#     if not(additional_params):
+#         additional_params = ""
+#     if query.get("RNAi"):
+#         columns = ["genes.WormBaseID", "genes.GeneName", "genes.sequence"]
+#         if "Vidal_RNAi" in tables:
+#             for i in "vidal_plate vidal_row vidal_col".split(" "):
+#                 columns.append(TABLE_DICT['Vidal_RNAi'] + "." + COLUMN_DICT[i])
+#         if "Ahringer_RNAi" in tables:
+#             for i in "ahringer_plate ahringer_well".split(" "):
+#                 columns.append(
+#                     TABLE_DICT['Ahringer_RNAi'] + "." + COLUMN_DICT[i])
+
+#     # This is a RNAseq data query not RNAi so process using the make_table_and_col_lists() fuction
+#     else:
+#         columns, tables = _make_table_and_col_lists(
+#             query, tables, additional_params)
+#     genes_str = query['genes']
+#     genes = genes_str.split('\r\n')
+#     gene_type = GENE_TYPE_DICT[query.get('gene_type')]
+#     df, sql_statement = models.join_data(
+#         columns, tables, genes, additional_params=additional_params, return_missing=return_missing, gene_type=gene_type)
+#     """ if len(df)>1:
+#         print('{type_} here'.format(type_=type(df.loc[0,df.columns[0]])))
+#         df = df.sort_values(by = df.columns[0], axis = 0, ascending = True) """
+#     return df, sql_statement
+
+
+def parse_RNAseq_query(query: ImmutableMultiDict):
+    """ builds the table and column lists based off the query and deseq tables that have been asked for
+    by iterating through all the types of datasets and translating to the real column names """
     tables = query.getlist('dataset')
     return_missing = query.get('return_missing')
     additional_params = query.get('additional_params')
-    if not(additional_params):
-        additional_params = ""
-    if query.get("RNAi"):
-        columns = ["genes.WormBaseID", "genes.GeneName", "genes.sequence"]
-        if "Vidal_RNAi" in tables:
-            for i in "vidal_plate vidal_row vidal_col".split(" "):
-                columns.append(TABLE_DICT['Vidal_RNAi'] + "." + COLUMN_DICT[i])
-        if "Ahringer_RNAi" in tables:
-            for i in "ahringer_plate ahringer_well".split(" "):
-                columns.append(
-                    TABLE_DICT['Ahringer_RNAi'] + "." + COLUMN_DICT[i])
-
-    # This is a RNAseq data query not RNAi so process using the make_table_and_col_lists() fuction
-    else:
-        columns, tables = _make_table_and_col_lists(
-            query, tables, additional_params)
-    genes_str = query['genes']
-    genes = genes_str.split('\r\n')
-    gene_type = GENE_TYPE_DICT[query.get('gene_type')]
-    df, sql_statement = models.join_data(
-        columns, tables, genes, additional_params=additional_params, return_missing=return_missing, gene_type=gene_type)
-    """ if len(df)>1:
-        print('{type_} here'.format(type_=type(df.loc[0,df.columns[0]])))
-        df = df.sort_values(by = df.columns[0], axis = 0, ascending = True) """
-    return df, sql_statement
-
-
-def _make_table_and_col_lists(query: ImmutableMultiDict, tables: list, additional_params: list):
-    """ builds the table and column lists based off the query and deseq tables that have been asked for
-    by iterating through all the types of datasets and translating to the real column names """
     larryTables = query.getlist('larryDataset')
     cco1_jmjd_tables = query.getlist('cco1_jmjd_Dataset')
     requested_columns = query.getlist('column')
@@ -102,7 +105,17 @@ def _make_table_and_col_lists(query: ImmutableMultiDict, tables: list, additiona
 
     tables = list(set(tables))
     print(tables)
-    return columns, tables
+
+    genes_str = query['genes']
+    genes = genes_str.splitlines()
+    # tell the database if you are using WB IDs, gene Names, or sequence names
+    gene_type = GENE_TYPE_DICT[query.get('gene_type')]
+    df, sql_statement = models.join_data(
+        columns, tables, genes, return_missing=return_missing, gene_type=gene_type)
+    """ if len(df)>1:
+        print('{type_} here'.format(type_=type(df.loc[0,df.columns[0]])))
+        df = df.sort_values(by = df.columns[0], axis = 0, ascending = True) """
+    return df, sql_statement
 
 
 def get_db_info() -> pd.DataFrame:
@@ -110,8 +123,70 @@ def get_db_info() -> pd.DataFrame:
     res = models.get_db_info()
     return res
 
+def parse_RNAi_query(query: ImmutableMultiDict) -> tuple:
+    """ takes immutable multidict from post request for a RNAi
+    request and processes it into a list of columns and tables 
+    as strings and sends it to models.join_data and returns a dataframe
+    """
 
-def db_form(request, file):
+    print(query)
+    tables = query.getlist('dataset')
+    return_missing = query.get('return_missing')
+    additional_params = query.get('additional_params')
+    if not(additional_params):
+        additional_params = ""
+    columns = ["genes.WormBaseID", "genes.GeneName", "genes.sequence"]
+
+    if "Vidal_RNAi" in tables:
+        for i in "vidal_plate vidal_row vidal_col".split(" "):
+            columns.append(TABLE_DICT['Vidal_RNAi'] + "." + COLUMN_DICT[i])
+
+    if "Ahringer_RNAi" in tables:
+        for i in "ahringer_plate ahringer_well".split(" "):
+            columns.append(
+                TABLE_DICT['Ahringer_RNAi'] + "." + COLUMN_DICT[i])
+    
+    genes_str = query['genes']
+    genes = genes_str.splitlines()
+    # tell the database if you are using WB IDs, gene Names, or sequence names
+    gene_type = GENE_TYPE_DICT[query.get('gene_type')]
+    df, sql_statement = models.join_data(
+        columns, tables, genes, return_missing=return_missing, gene_type=gene_type)
+    """ if len(df)>1:
+        print('{type_} here'.format(type_=type(df.loc[0,df.columns[0]])))
+        df = df.sort_values(by = df.columns[0], axis = 0, ascending = True) """
+    return df, sql_statement
+
+def send_download(df: pd.DataFrame):
+    resp = make_response(df.to_csv(sep="\t"))
+    resp.headers["Content-Disposition"] = "attachment; filename=result.txt"
+    resp.headers["Content-Type"] = "text/csv"
+    return resp
+
+
+def make_clustergrammer(df: pd.DataFrame):
+    df.set_index('genes.GeneName', inplace=True)
+    df.drop("genes.WormBaseID", inplace=True, axis=1)
+    df.dropna(inplace=True)
+    df = df[df.applymap(np.isreal).all(1)]
+    net = Network()
+    net.load_df(df)
+    net.swap_nan_for_zero()
+    net.cluster(dist_type='euclidean')
+    viz = net.export_net_json()
+
+
+def render_html_table(df: pd.DataFrame):
+    return render_template(
+        'table.html',
+        column_names=df.columns.values,
+        row_data=list(df.values.tolist()),
+        link_column="genes.WormBaseID",
+        zip=zip,
+    )
+
+
+def render_table_heatmap_or_download(df: pd.DataFrame):
     """ used to make and parse post requests from the forms used to query RNAseq and RNAi data """
     if request.method == 'POST':  # this block is only entered when the form is submitted
         query = request.form

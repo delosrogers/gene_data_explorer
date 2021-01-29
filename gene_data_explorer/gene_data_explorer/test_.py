@@ -14,7 +14,7 @@ def test_parse_query_RNAi():
         [("dataset", "Vidal_RNAi"), ("genes", "WBGene00000885"),
         ("return_missing", "False"), ("additional_params", ""),
         ('gene_type', 'WBID'), ("RNAi", "RNAi_screen")])
-    df, stmnt = service.parse_query(query_dict)
+    df, stmnt = service.parse_RNAi_query(query_dict)
     df = df.drop("genes.sequence", axis=1)
     real_result = np.array(pd.DataFrame(
         [("WBGene00000885", "cyn-9", 10002, "E", 5), ("WBGene00000885", "cyn-9", 11053, "B", 2)]))
@@ -31,7 +31,7 @@ def test_parse_query_RNAi_vidal_ahringer():
     gene_str = "\r\n".join(genes)
     query_dict = MultiDict([("dataset", "Vidal_RNAi"), ("dataset", "Ahringer_RNAi"), ("genes", gene_str), (
         "return_missing", "True"), ("additional_params", ""), ("RNAi", "RNAi_screen"), ('gene_type', 'WBID')])
-    df, stmnt = service.parse_query(query_dict)
+    df, stmnt = service.parse_RNAi_query(query_dict)
     df = df.drop("genes.sequence", axis=1)
     for i in real_result_df.index:
         for j in real_result_df.columns:
@@ -73,7 +73,7 @@ def test_parse_query_RNAseq_data():
         ("return_missing", "True")
     ])
     print(query_dict)
-    df, stmt = service.parse_query(query_dict)
+    df, stmt = service.parse_RNAseq_query(query_dict)
     df = df.drop("genes.sequence", axis=1)
     real_result = np.array(real_result_df)
 

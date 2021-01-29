@@ -184,12 +184,44 @@ def manage_users():
 @login_required
 @authentication_required
 def mine():
-    return service.db_form(request, "mine.html")
+    if request.method == 'POST':  # this block is only entered when the form is submitted
+        query = request.form
+
+        result, sql_statement = service.parse_RNAseq_query(query)
+        result = result.apply(
+            service.replace_empty_gene_name_with_wbid_or_sequence, axis=1)
+        if query.get('sequence_names') != "True":
+            result = result.drop('genes.sequence', axis=1)
+        download_type_switch = {
+            'tsv': service.send_download,
+            'clustergrammer': service.make_clustergrammer,
+            'html': service.render_html_table,
+        }
+        resp = download_type_switch[query.get('download_type')](result)
+        return resp
+    else:
+        return render_template('mine.html')
 
 
 @app.route('/rnai', methods=['GET', 'POST'])
 def rnai():
-    return service.db_form(request, "RNAi.html")
+    if request.method == 'POST':  # this block is only entered when the form is submitted
+        query = request.form
+
+        result, sql_statement = service.parse_RNAi_query(query)
+        result = result.apply(
+            service.replace_empty_gene_name_with_wbid_or_sequence, axis=1)
+        if query.get('sequence_names') != "True":
+            result = result.drop('genes.sequence', axis=1)
+        download_type_switch = {
+            'tsv': service.send_download,
+            'html': service.render_html_table,
+        }
+        resp = download_type_switch[query.get('download_type')](result)
+        return resp
+    else:
+        return render_template('RNAi.html')
+        
 
 
 @app.route('/analysis_info')

@@ -145,7 +145,7 @@ db.Model.prepare(db.engine, reflect=True)
 db.create_all()
 
 
-def join_data(columns: list, tables: list, gene_list: list, additional_params="", return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:
+def join_data(columns: list, tables: list, gene_list: list, return_missing="False", gene_type="WormBaseID") -> pd.DataFrame:
     "take a list of columns tables which they are in and a gene list and make a sql query using sqlalchemy and return a dataframe of the results"
     # current column list will get converted to ORM objects and I need the strings to name df columns
     column_names = deepcopy(columns)
@@ -171,15 +171,18 @@ def join_data(columns: list, tables: list, gene_list: list, additional_params=""
             q = q.join(*join_args)
 
     # turn gene type strings into ORM objects that relate to db columns
-    translate_genes = {'WormBaseID': genes.WormBaseID,
-                       'GeneName': genes.GeneName, 'sequence': genes.sequence}
+    translate_genes = {
+        'WormBaseID': genes.WormBaseID,
+        'GeneName': genes.GeneName,
+        'sequence': genes.sequence,
+    }
     gene_type = translate_genes[gene_type]
     gene_tuple = tuple(gene_list)
     q = q.filter(gene_type.in_(gene_tuple)).filter(genes.live == "Live").order_by(genes.WormBaseID.asc())
     df = pd.read_sql(q.statement, db.session.bind)
     df.columns = column_names
     print(df)
-    return df, ""
+    return df, q.statement
 
 
 def get_gene_info(gene):
