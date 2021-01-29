@@ -10,8 +10,10 @@ import math
 
 def test_parse_query_RNAi():
     # tests wether by passing columns and genes to the parse query function you can do a library lookup
-    query_dict = MultiDict([("dataset", "Vidal_RNAi"), ("genes", "WBGene00000885"), ("return_missing",
-                                                                                     "False"), ("additional_params", ""), ('gene_type', 'WBID'), ("RNAi", "RNAi_screen")])
+    query_dict = MultiDict(
+        [("dataset", "Vidal_RNAi"), ("genes", "WBGene00000885"),
+        ("return_missing", "False"), ("additional_params", ""),
+        ('gene_type', 'WBID'), ("RNAi", "RNAi_screen")])
     df, stmnt = service.parse_query(query_dict)
     df = df.drop("genes.sequence", axis=1)
     real_result = np.array(pd.DataFrame(
