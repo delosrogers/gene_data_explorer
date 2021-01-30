@@ -25,8 +25,9 @@ GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
 
-app.config['TESTING'] = False
-
+app.config['TESTING'] = True
+print(os.environ["LOGIN_DISABLED"], "login env")
+app.config['LOGIN_DISABLED'] = os.getenv("LOGIN_DISABLED", "False") == "True"
 
 app.secret_key = secrets.token_bytes(32)
 login_manager = LoginManager()
@@ -52,7 +53,10 @@ def load_user(user_id):
 
 def authentication_required(func):
     def wrapper():
-        if current_user.is_authenticated():
+        print(app.config)
+        if app.config['LOGIN_DISABLED']:
+            return func()
+        elif current_user.is_authenticated():
             return func()
         else:
             return "not authenticated"

@@ -174,6 +174,7 @@ def make_clustergrammer(df: pd.DataFrame):
     net.swap_nan_for_zero()
     net.cluster(dist_type='euclidean')
     viz = net.export_net_json()
+    return render_template('clustergrammer.html', viz=viz)
 
 
 def render_html_table(df: pd.DataFrame):
