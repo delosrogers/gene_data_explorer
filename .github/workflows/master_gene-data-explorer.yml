@@ -1,0 +1,35 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy container app to Azure Web App - gene-data-explorer
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - uses: actions/checkout@master
+
+    - uses: azure/docker-login@v1
+      with:
+        login-server: https://labdockerregistry.azurecr.io/
+        username: ${{ secrets.AzureAppService_ContainerUsername_de313b1ffc2840d08f77762d7359b0e5 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_153cea909abe41b585796616d7778f9b }}
+
+    - run: |
+        docker build -t "labdockerregistry.azurecr.io/gene-data-explorer:${{ github.sha }}" .
+        docker push "labdockerregistry.azurecr.io/gene-data-explorer:${{ github.sha }}"
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'gene-data-explorer'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_c5c884824e774f3a83f78356838c8abe }}
+        images: 'labdockerregistry.azurecr.io/gene-data-explorer:${{ github.sha }}'
