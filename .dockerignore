@@ -1,0 +1,4 @@
+gene_data_explorer/.env
+.git/
+Dockerfile
+.dockerignore
