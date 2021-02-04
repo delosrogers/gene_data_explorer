@@ -6,5 +6,5 @@ if [[ $AZURE=true ]]
 then
     flask run --host 0.0.0.0 --port 80
 else
-    flask run --host 0.0.0.0 --cert ~/openssl/cert.pem --key ~/openssl/key_unencrypted.pem
+    flask run --host 0.0.0.0 --port 80
 fi
