@@ -1,6 +1,7 @@
 import importlib
 import gene_data_explorer.models as models
 import gene_data_explorer.service as service
+import gene_data_explorer.uploadData as uploadData
 from werkzeug.datastructures import MultiDict
 import numpy as np
 from pathlib import Path
@@ -102,3 +103,33 @@ def test_parse_query_RNAseq_data():
                 real_result[i, j]), rel_tol=1E-06))
 
     assert sentinal
+
+
+def test_transformData_for_upload():
+    test_data = pd.DataFrame(
+        [["SomeGene", 1, .1, .05, "blashsdf"]],
+        columns=["WormBaseID", "coollog2FoldChange", "padj", "myPvalue", "another col"])
+    real_result = pd.DataFrame(
+        [["SomeGene", None, 1, None, None, .05, .1]],
+        columns=["WormBaseID","baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "padj"]
+    )
+    columnMapper = {
+        "WormBaseID": "WormBaseID",
+        "coollog2FoldChange": "log2FoldChange",
+        "padj": "padj",
+        "myPvalue": "pvalue",
+    }
+    test_result = uploadData.transform_upload(columnMapper, test_data)
+    assert test_result.equals(real_result)
+
+def test_add_wormbase_ID():
+    test_data = pd.DataFrame(
+        [["hsp-4", 5]],
+        columns=["GeneName", "log2FoldChange"]
+    )
+    real_result = pd.DataFrame(
+        [["hsp-4", 5, "WBGene00002008"]],
+        columns=["GeneName", "log2FoldChange", "WormBaseID"]
+    )
+    test_result = uploadData.add_wormbase_ID(test_data, "GeneName")
+    assert test_result.equals(real_result)

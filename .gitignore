@@ -17,3 +17,5 @@ clustergrammer
 *.pyc
 __pycache__/
 .idea/
+data/
+.env

@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.automap import automap_base
-from gene_data_explorer.credentials import *
+from gene_data_explorer.config import *
 import os
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ if os.getenv('RUNNING_IN_DOCKER') == 'TRUE':
 else:
     host = '127.0.0.1'
     port = os.getenv("MYSQL_PORT", "6603")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://web_app:{passwd}@{host}:{port}/gene_data'.format(passwd = web_app_passwd, host=host, port = port)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://web_app:{passwd}@{host}:{port}/gene_data'.format(passwd=MYSQL_PASSWD, host=host, port = port)
 db=SQLAlchemy(app)
 db.Model = automap_base(db.Model)
 db.Model.prepare(db.engine, reflect=True)

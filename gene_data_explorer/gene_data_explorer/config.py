@@ -1,3 +1,12 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+MYSQL_PASSWD = os.getenv("MYSQL_PASSWD")
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "NO id")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "no secret")
+
 COLUMN_DICT = {
     'baseMean': 'baseMean',
     'log2FoldChange': 'log2FoldChange',

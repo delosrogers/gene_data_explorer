@@ -218,3 +218,12 @@ def get_db_info() -> pd.DataFrame:
                      db.engine)
     df.columns = columns
     return df
+
+
+def get_gene_table() -> pd.DataFrame:
+    sql_q = "SELECT * FROM genes;"
+    df = pd.read_sql(sql_q, db.session.bind)
+    return df
+
+def upload_df(df: pd.DataFrame, name: str) -> pd.DataFrame:
+    atributes_dict = {}

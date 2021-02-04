@@ -7,7 +7,7 @@ set LOGIN_DISABLED=True
 set MYSQL_PORT=3306
 set HOMEDIR=%HOMEDRIVE%%HOMEPATH%
 if %LOGIN_DISABLED% EQU True (
-    flask run)
+    flask run --no-reload)
 else (
     flask run --cert %HOMEDIR%\.openssl\selfsigned.crt --key %HOMEDIR%\.openssl\selfsigned.key
 )

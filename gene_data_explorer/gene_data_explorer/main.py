@@ -3,7 +3,7 @@ import platform
 import gene_data_explorer.service as service
 from gene_data_explorer.service import UserManagement
 from gene_data_explorer import app, db
-from gene_data_explorer.credentials import *
+from gene_data_explorer.config import *
 from flask_login import (
     LoginManager,
     current_user,
@@ -26,7 +26,6 @@ GOOGLE_DISCOVERY_URL = (
 )
 
 app.config['TESTING'] = True
-print(os.environ["LOGIN_DISABLED"], "login env")
 app.config['LOGIN_DISABLED'] = os.getenv("LOGIN_DISABLED", "False") == "True"
 
 app.secret_key = secrets.token_bytes(32)
@@ -258,4 +257,4 @@ def serve_libraries(filename):
 
 if __name__ == "__main__":        # on running python app.py
     #port = int(os.environ.get('PORT',5000))
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', use_reloader=False)
