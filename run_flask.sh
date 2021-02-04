@@ -3,4 +3,4 @@
 export FLASK_ENV=development
 export FLASK_APP=gene_data_explorer
 
-flask run --host 0.0.0.0 --cert ~/openssl/cert.pem --key ~/openssl/key_unencrypted.pem
+flask run --host 0.0.0.0 --port 80 --cert ~/openssl/cert.pem --key ~/openssl/key_unencrypted.pem

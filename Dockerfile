@@ -12,6 +12,7 @@ WORKDIR /app
 ENV RUNNING_IN_DOCKER=TRUE
 COPY . /app
 EXPOSE 5000
+EXPOSE 80
 CMD ./run_flask.sh
 #CMD bash
 
