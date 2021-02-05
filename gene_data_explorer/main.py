@@ -97,10 +97,10 @@ def login():
     base = request.base_url
     base = base.split(":")
     base[0] = "https"
-    redirect = ":".join(base)
+    redirect_base = ":".join(base)
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
-        redirect_uri=request.base_url + "/callback",
+        redirect_uri=redirect_base + "/callback",
         scope=["openid", "email", "profile"],
     )
     return redirect(request_uri)
