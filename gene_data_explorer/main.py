@@ -94,6 +94,10 @@ def login():
 
     # Use library to construct the request for Google login and provide
     # scopes that let you retrieve user's profile from Google
+    base = request.base_url
+    base = base.split(":")
+    base[0] = "https"
+    redirect = ":".join(base)
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
         redirect_uri=request.base_url + "/callback",
@@ -207,6 +211,8 @@ def mine():
 
 
 @app.route('/rnai', methods=['GET', 'POST'])
+@login_required
+@authentication_required
 def rnai():
     if request.method == 'POST':  # this block is only entered when the form is submitted
         query = request.form
@@ -228,6 +234,8 @@ def rnai():
 
 
 @app.route('/analysis_info')
+@login_required
+@authentication_required
 def serve_info():
     return pd.read_csv("templates/analysis_info.csv").to_html()
 
