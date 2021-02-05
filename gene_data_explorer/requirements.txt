@@ -19,3 +19,4 @@ mysql
 Flask-Bootstrap
 Flask-WTF
 python-dotenv
+pyodbc
