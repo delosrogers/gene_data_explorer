@@ -5,51 +5,7 @@ from gene_data_explorer import db
 from copy import deepcopy
 from sqlalchemy import Column, Integer, String, or_, and_
 from wtforms import SubmitField, StringField, SelectField, TextAreaField, BooleanField, validators
-# from sqlalchemy.ext.automap impor
 from flask_login import UserMixin
-# t automap_base
-
-#
-# """ class genes(db.Model):
-#    __tablename__ = 'genes'
-#
-# class cco1_jmjd_RNAseq(db.Model):
-#    __tablename__ = 'cco1_jmjd_RNAseq'
-#
-# class Ahringer_RNAi(db.Model):
-#    __tablename__ = 'Ahringer_RNAi'
-#
-# class Vidal_RNAi(db.Model):
-#    __tablename__ = 'Vidal_RNAi'
-#
-# class dat1p_tph1p_v_N2(db.Model):
-#    __tablename__ = 'dat1p_tph1p_v_N2'
-#
-# class dat1p_v_N2(db.Model):
-#    __tablename__ = 'dat1p_v_N2'
-#
-# class eps8_RNAi(db.Model):
-#    __tablename__ = 'eps8_RNAi'
-#
-# class human_genes(db.Model):
-#    __tablename__ = 'human_genes'
-#
-# class human_mito_stress(db.Model):
-#    __tablename__ = 'human_mito_stress'
-#
-# class rab3p_v_N2(db.Model):
-#    __tablename__ = 'rab3p_v_N2'
-#
-# class tph1p_v_N2(db.Model):
-#    __tablename__ = 'tph1p_v_N2'
-
-""" class User(db.Model):
-    __tablename__ = 'users'
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
- """
 
 
 class Authorized_user_emails(db.Model):

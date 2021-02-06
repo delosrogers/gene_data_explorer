@@ -52,7 +52,7 @@ def load_user(user_id):
 
 def authentication_required(func):
     def wrapper():
-        print(app.config)
+        # print(app.config)
         if app.config['LOGIN_DISABLED']:
             return func()
         elif current_user.is_authenticated():
@@ -138,7 +138,7 @@ def callback():
     user = User.get(unique_id)
     print(user, "user in callback")
     if UserManagement.is_email_authorized(users_email):
-        print(user)
+        # print(user)
         if user is None:
             user = User(id=unique_id, email=users_email,
                         username=users_name, user_type="user", authed=True)
@@ -166,8 +166,6 @@ def logout():
 
 @app.route("/")                   # at the end point /
 def index():
-    if current_user.is_authenticated:
-        print(current_user.username)
     return render_template("index.html")
 
 
