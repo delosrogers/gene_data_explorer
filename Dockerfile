@@ -11,11 +11,11 @@ RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17
 RUN apt-get install -y python-mysqldb default-mysql-client npm gcc g++ build-essential unixodbc-dev 
 RUN pip install --upgrade pip
 RUN pip install -U -r requirements.txt
+COPY . /app
 WORKDIR /app/gene_data_explorer
 RUN npm install .
 WORKDIR /app
 ENV RUNNING_IN_DOCKER=TRUE
-COPY . /app
 EXPOSE 5000
 EXPOSE 80
 CMD ./run_flask.sh
