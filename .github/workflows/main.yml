@@ -28,7 +28,7 @@ jobs:
       - name: build and run container
         run: |
           docker build -t gene_data_explorer .
-          docker run -d --rm --name gene_data_explorer -e AZURE_SQL_PASSWD=${{ secrets.AZURE_SQL_PASSWD }} -e AZURE_SQL_USERNAME=${{ secrets.AZURE_SQL_USERNAME }} -e LOGIN_DISABLED=True gene_data_explorer
+          docker run -d --rm --name gene_data_explorer -e AZURE_SQL_PASSWD='${{ secrets.AZURE_SQL_PASSWD }}' -e AZURE_SQL_USERNAME='${{ secrets.AZURE_SQL_USERNAME }}' -e LOGIN_DISABLED=True gene_data_explorer
         
 
       # Runs a set of commands using the runners shell
