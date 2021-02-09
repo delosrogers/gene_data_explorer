@@ -1,5 +1,8 @@
 {
     "dependencies": {
-        "clustergrammer": "git+https://github.com/delosrogers/clustergrammer.git"
+        "clustergrammer": "git+https://github.com/delosrogers/clustergrammer.git",
+        "bootstrap": "3.4.1",
+        "jquery": "3.5.1"
+
     }
 }
