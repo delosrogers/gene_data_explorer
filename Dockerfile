@@ -11,7 +11,7 @@ RUN apt-get update
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17
 RUN apt-get install -y python-mysqldb default-mysql-client npm gcc g++ build-essential unixodbc-dev 
 RUN pip install --upgrade pip
-RUN pip install -U -r requirements.txt
+RUN pip install --no-cache-dir -U -r requirements.txt
 COPY . /app
 WORKDIR /app/gene_data_explorer
 RUN npm install .
