@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.8-slim
 COPY ./gene_data_explorer/requirements.txt /app/requirements.txt
 WORKDIR /app
 RUN apt-get update
