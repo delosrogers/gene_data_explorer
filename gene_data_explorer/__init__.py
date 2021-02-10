@@ -27,7 +27,6 @@ params = urllib.parse.quote_plus(
     'Database=%s;' % database +
     'Uid=%s;' % username +
     'Pwd={%s};' % password +
-    'schema=gene_data'
     'Encrypt=yes;' +
     'TrustServerCertificate=no;' +
     'Connection Timeout=30;'
