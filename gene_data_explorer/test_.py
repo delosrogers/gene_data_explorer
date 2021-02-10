@@ -1,7 +1,7 @@
 import importlib
 import gene_data_explorer.models as models
 import gene_data_explorer.service as service
-import gene_data_explorer.uploadData as uploadData
+import gene_data_explorer.upload_data as upload_data
 from werkzeug.datastructures import MultiDict
 import numpy as np
 from pathlib import Path
@@ -119,7 +119,7 @@ def test_transformData_for_upload():
         "padj": "padj",
         "myPvalue": "pvalue",
     }
-    test_result = uploadData.transform_upload(columnMapper, test_data)
+    test_result = upload_data.transform_upload(columnMapper, test_data)
     assert test_result.equals(real_result)
 
 def test_add_wormbase_ID():
@@ -131,5 +131,5 @@ def test_add_wormbase_ID():
         [["hsp-4", 5, "WBGene00002008"]],
         columns=["GeneName", "log2FoldChange", "WormBaseID"]
     )
-    test_result = uploadData.add_wormbase_ID(test_data, "GeneName")
+    test_result = upload_data.add_wormbase_ID(test_data, "GeneName")
     assert test_result.equals(real_result)

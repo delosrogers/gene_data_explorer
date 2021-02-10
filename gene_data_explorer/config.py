@@ -38,6 +38,8 @@ TABLE_DICT = {
     'human_mito_stress':'human_mito_stress',
     'rab3p_v_N2':'rab3p_v_N2',
     'tph1p_v_N2':'tph1p_v_N2',
+    'L4_act1_v_N2_L4': 'L4_act1_v_N2_L4',
+    'D1_act1_v_N2_D1': 'D1_act1_v_N2_D1',
 }
 
 GENE_TYPE_DICT = {
