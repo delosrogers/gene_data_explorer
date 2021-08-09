@@ -135,7 +135,8 @@ def join_data(columns: list, tables: list, gene_list: list, return_missing="Fals
     gene_type = translate_genes[gene_type]
     gene_tuple = tuple(gene_list)
     q = q.filter(gene_type.in_(gene_tuple)).filter(genes.live == "Live").order_by(genes.WormBaseID.asc())
-    df = pd.read_sql(q.statement, db.session.bind)
+    res = q.all()
+    df = pd.DataFrame.from_records(res)
     df.columns = column_names
     print(df)
     return df, q.statement

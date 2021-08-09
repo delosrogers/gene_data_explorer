@@ -134,9 +134,10 @@ def make_clustergrammer(df: pd.DataFrame):
     df.drop("genes.WormBaseID", inplace=True, axis=1)
     df.dropna(inplace=True)
     df = df[df.applymap(np.isreal).all(1)]
+    df = df.astype(float)
     net = Network()
     net.load_df(df)
-    net.swap_nan_for_zero()
+    # net.swap_nan_for_zero()
     net.cluster(dist_type='euclidean')
     viz = net.export_net_json()
     return render_template('clustergrammer.html', viz=viz)
